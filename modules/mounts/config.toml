@@ -1,0 +1,5 @@
+[[icedos.hardware.mounts]]
+path = "/"
+device = "/dev/disk/by-uuid/e2a8d4bf-b1fc-446f-b347-c3671eda1ccb"
+fsType = "btrfs"
+flags = ["compress=zstd", "nofail", "x-gvfs-show"]
