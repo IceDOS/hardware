@@ -1,0 +1,2 @@
+[icedos.hardware.bootloaders.systemd-boot]
+mountPoint = "/boot"
