@@ -1,0 +1,2 @@
+[icedos.harware.bootloaders.grub]
+device = "/dev/sda"
