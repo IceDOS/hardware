@@ -1,0 +1,9 @@
+[[icedos.hardware.monitors]]
+name = "DP-2"
+disable = false
+resolution = "3440x1440"
+refreshRate = 144
+position = "3840x0"
+scaling = 1
+rotation = 0
+tenBit = false
