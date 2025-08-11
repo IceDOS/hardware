@@ -1,0 +1,3 @@
+[icedos.hardware.kernel]
+version = "cachyos" # Options: 'cachyos', 'cachyos-rc', cachyos-server', 'latest', 'lts', 'valve', 'zen'
+swappiness = 10
