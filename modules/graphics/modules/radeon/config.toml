@@ -1,0 +1,2 @@
+[icedos.hardware.graphics.radeon]
+rocm = false
