@@ -1,2 +1,0 @@
-[icedos.hardware.zram]
-percentage = 50 # Percentage of physical ram to be used for zram
