@@ -13,9 +13,7 @@
         }:
 
         {
-          networking = {
-            extraHosts = config.icedos.hardware.network.hosts;
-          };
+          networking.extraHosts = config.icedos.hardware.network.hosts;
         }
       )
     ];
