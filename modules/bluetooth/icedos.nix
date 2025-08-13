@@ -19,7 +19,7 @@
           cfg = config.icedos;
         in
         {
-          environment.systemPackages = mkIf (cfg.desktop.hyprland.enable) [ pkgs.blueberry ];
+          environment.systemPackages = mkIf (lib.hasAttr "hyprland" cfg.desktop) [ pkgs.blueberry ];
           hardware.bluetooth.enable = true;
         }
       )
