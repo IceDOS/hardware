@@ -14,7 +14,6 @@
 
         let
           inherit (lib) mapAttrs;
-          cfg = config.icedos.system;
         in
         {
           services = {
@@ -70,7 +69,7 @@
                 }
               ]
             '';
-          }) cfg.users;
+          }) config.icedos.users;
         }
       )
     ];

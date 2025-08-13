@@ -47,6 +47,12 @@
               "hid_steam"
             ];
           };
+
+          nixpkgs.overlays = [
+            (final: super: {
+              deckbd = final.callPackage ./package.nix { };
+            })
+          ];
         }
       )
     ];

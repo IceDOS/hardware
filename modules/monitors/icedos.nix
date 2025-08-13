@@ -12,13 +12,13 @@
     in
     mkSubmoduleListOption { default = [ ]; } {
       name = mkStrOption { };
-      disable = mkBoolOption { };
+      disable = mkBoolOption { default = false; };
       resolution = mkStrOption { };
       refreshRate = mkNumberOption { };
       position = mkStrOption { };
-      scaling = mkNumberOption { };
+      scaling = mkNumberOption { default = 1; };
       rotation = mkNumberOption { };
-      tenBit = mkBoolOption { };
+      tenBit = mkBoolOption { default = false; };
     };
 
   outputs.nixosModules =
@@ -144,7 +144,7 @@
                 );
               };
             };
-          }) cfg.system.users;
+          }) cfg.users;
         }
       )
     ];

@@ -26,7 +26,7 @@
 
             systemd-boot = {
               enable = true;
-              configurationLimit = cfg.system.generations.bootEntries;
+              configurationLimit = cfg.system.generations;
               consoleMode = "max";
             };
 

@@ -17,7 +17,7 @@
           inherit (lib) mkIf;
         in
         {
-          jovian.devices.steamdeck = mkIf (!config.icedos.internals.isFirstBuild) {
+          jovian.devices.steamdeck = mkIf (!config.icedos.system.isFirstBuild) {
             enable = true;
             enableGyroDsuService = true;
             autoUpdate = true;

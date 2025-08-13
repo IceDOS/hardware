@@ -19,7 +19,7 @@
                 device = cfg.hardware.bootloaders.grub.device;
                 useOSProber = true;
                 enableCryptodisk = true;
-                configurationLimit = cfg.system.generations.bootEntries;
+                configurationLimit = cfg.system.generations;
               };
 
               timeout = 1;

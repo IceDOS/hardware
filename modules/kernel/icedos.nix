@@ -31,7 +31,7 @@
           boot = {
             kernelPackages =
               with pkgs;
-              if (cfg.internals.isFirstBuild && chaoticKernel) then
+              if (cfg.system.isFirstBuild && chaoticKernel) then
                 linuxPackages
               else
                 {

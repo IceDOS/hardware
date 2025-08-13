@@ -1,6 +1,15 @@
-{ ... }:
+{ icedosLib, ... }:
 
 {
+  options.icedos.hardware.devices =
+    let
+      inherit (icedosLib) mkBoolOption;
+    in
+    {
+      laptop = mkBoolOption { default = false; };
+      server = mkBoolOption { default = false; };
+    };
+
   outputs.nixosModules =
     { ... }:
     [
