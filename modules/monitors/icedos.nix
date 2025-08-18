@@ -17,7 +17,7 @@
       refreshRate = mkNumberOption { };
       position = mkStrOption { };
       scaling = mkNumberOption { default = 1; };
-      rotation = mkNumberOption { };
+      rotation = mkNumberOption { default = 0; };
       tenBit = mkBoolOption { default = false; };
     };
 
