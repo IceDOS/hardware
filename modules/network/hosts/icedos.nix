@@ -3,7 +3,7 @@
 {
   options.icedos.hardware.network.hosts = icedosLib.mkLinesOption { default = ""; };
 
-  ouputs.nixosModules =
+  outputs.nixosModules =
     { ... }:
     [
       (
