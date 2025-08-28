@@ -1,0 +1,28 @@
+diff --git a/scripts/00-gamescope/displays/deckhd.steamdeck.deckhd-lcd.lua b/scripts/00-gamescope/displays/deckhd.steamdeck.deckhd-lcd.lua
+index 11ed82f..4024452 100644
+--- a/scripts/00-gamescope/displays/deckhd.steamdeck.deckhd-lcd.lua
++++ b/scripts/00-gamescope/displays/deckhd.steamdeck.deckhd-lcd.lua
+@@ -3,7 +3,8 @@ gamescope.config.known_displays.steamdeck_deckhd_lcd = {
+     dynamic_refresh_rates = {
+         40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+         50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+-        60
++        60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
++        70
+     },
+     hdr = {
+         -- Setup some fallbacks or undocking with HDR
+diff --git a/scripts/00-gamescope/displays/valve.steamdeck.lcd.lua b/scripts/00-gamescope/displays/valve.steamdeck.lcd.lua
+index 5e97c4e..fc0960c 100644
+--- a/scripts/00-gamescope/displays/valve.steamdeck.lcd.lua
++++ b/scripts/00-gamescope/displays/valve.steamdeck.lcd.lua
+@@ -19,7 +19,8 @@ gamescope.config.known_displays.steamdeck_lcd = {
+     dynamic_refresh_rates = {
+         40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+         50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+-        60
++        60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
++        70
+     },
+     hdr = {
+         -- Setup some fallbacks or undocking with HDR
