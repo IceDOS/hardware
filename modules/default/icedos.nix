@@ -1,24 +1,32 @@
 { icedosLib, ... }:
 
 {
-  options.icedos.hardware.devices =
+  options.icedos.hardware =
     let
       inherit (icedosLib) mkBoolOption;
     in
     {
-      laptop = mkBoolOption { default = false; };
-      server = mkBoolOption { default = false; };
+      devices = {
+        laptop = mkBoolOption { default = false; };
+        server = mkBoolOption { default = false; };
+      };
+
+      network.firewall = mkBoolOption { default = true; };
     };
 
   outputs.nixosModules =
     { ... }:
     [
-      {
-        hardware.enableAllFirmware = true;
-        networking.hostName = "icedos";
-        services.fstrim.enable = true; # Enable SSD TRIM
-        systemd.services.NetworkManager-wait-online.enable = false;
-      }
+      (
+        { config, ... }:
+        {
+          hardware.enableAllFirmware = true;
+          networking.firewall.enable = config.icedos.hardware.network.firewall;
+          networking.hostName = "icedos";
+          services.fstrim.enable = true; # Enable SSD TRIM
+          systemd.services.NetworkManager-wait-online.enable = false;
+        }
+      )
     ];
 
   meta.name = "default";
