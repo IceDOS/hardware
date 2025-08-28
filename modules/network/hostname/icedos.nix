@@ -1,7 +1,7 @@
 { icedosLib, ... }:
 
 {
-  options.icedos.hardware.network.hostname = icedosLib.mkStrOption { default = ""; };
+  options.icedos.hardware.network.hostname = icedosLib.mkStrOption { default = "icedos"; };
 
   ouputs.nixosModules =
     { ... }:
@@ -10,11 +10,12 @@
 
         {
           config,
+          lib,
           ...
         }:
 
         {
-          networking.hostName = config.icedos.hardware.network.hostname;
+          networking.hostName = lib.mkForce config.icedos.hardware.network.hostname;
         }
       )
     ];
