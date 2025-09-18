@@ -34,7 +34,7 @@
           powerLimit = graphics.nvidia.powerLimit;
           nvidia_x11 = config.boot.kernelPackages.nvidia_x11.bin;
         in
-        mkIf (lib.hasAttr "graphics" hardware && graphics.nvidia.enable) {
+        {
           services.xserver.videoDrivers = [ "nvidia" ]; # Install the nvidia drivers
 
           hardware.nvidia = {
@@ -55,13 +55,12 @@
           };
 
           # Enable nvidia gpu acceleration for containers
-          virtualisation.docker.enableNvidia = (
-            cfg.applications.container-manager.enable && !cfg.applications.container-manager.usePodman
-          );
-
-          virtualisation.podman.enableNvidia = (
-            cfg.applications.container-manager.enable && cfg.applications.container-manager.usePodman
-          );
+          hardware.nvidia-container-toolkit.enable =
+            let
+              inherit (lib) hasAttr;
+              applications = cfg.applications;
+            in
+            (hasAttr "docker" applications || hasAttr "podman" applications);
 
           icedos.applications.toolset.commands = mkIf (cfg.hardware.devices.laptop) [
             (
