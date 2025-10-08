@@ -1,21 +1,27 @@
 { icedosLib, ... }:
 
 {
-  options.icedos.hardware.network.hostname = icedosLib.mkStrOption { default = "icedos"; };
+  options.icedos.hardware.network.hostname =
+    let
+      defaultConfig =
+        let
+          inherit (builtins) readFile;
+        in
+        (fromTOML (readFile ./config.toml)).icedos.hardware.network;
+    in
+    icedosLib.mkStrOption { default = defaultConfig.hostname; };
 
   ouputs.nixosModules =
     { ... }:
     [
       (
-
         {
           config,
-          lib,
           ...
         }:
 
         {
-          networking.hostName = lib.mkForce config.icedos.hardware.network.hostname;
+          networking.hostName = config.icedos.hardware.network.hostname;
         }
       )
     ];

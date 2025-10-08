@@ -1,2 +1,6 @@
+[icedos.hardware.devices]
+laptop = false
+server = false
+
 [icedos.hardware.network]
 firewall = true
