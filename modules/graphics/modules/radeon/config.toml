@@ -1,2 +1,3 @@
 [icedos.hardware.graphics.radeon]
 rocm = false
+featureMask = "" # e.g. "0xffffffff" (for clock/voltage control)
