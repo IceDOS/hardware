@@ -1,6 +1,8 @@
-{ ... }:
+{ icedosLib, ... }:
 
 {
+  options.icedos.hardware.cpus.ryzen = icedosLib.mkBoolOption { default = true; };
+
   outputs.nixosModules =
     { ... }:
     [
