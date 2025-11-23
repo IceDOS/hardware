@@ -34,5 +34,15 @@
       )
     ];
 
-  meta.name = "default";
+  meta = {
+    name = "default";
+
+    dependencies = [
+      {
+        modules = [
+          "hostname"
+        ];
+      }
+    ];
+  };
 }

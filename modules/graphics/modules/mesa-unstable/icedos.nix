@@ -13,6 +13,16 @@
 
   meta = {
     name = "mesa-unstable";
-    depends = [ "graphics" ]; # TODO implement dependencies
+
+    dependencies = [
+      {
+        modules = [ "graphics" ];
+      }
+
+      {
+        url = "github:icedos/providers";
+        modules = [ "chaotic" ];
+      }
+    ];
   };
 }

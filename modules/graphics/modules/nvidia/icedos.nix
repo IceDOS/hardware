@@ -110,6 +110,11 @@
 
   meta = {
     name = "nvidia";
-    depends = [ "graphics" ]; # TODO implement dependencies
+
+    dependencies = [
+      {
+        modules = [ "graphics" ];
+      }
+    ];
   };
 }

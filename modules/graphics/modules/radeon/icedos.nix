@@ -38,5 +38,13 @@
       )
     ];
 
-  meta.name = "radeon";
+  meta = {
+    name = "radeon";
+
+    dependencies = [
+      {
+        modules = [ "graphics" ];
+      }
+    ];
+  };
 }

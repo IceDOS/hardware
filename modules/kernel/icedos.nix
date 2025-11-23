@@ -51,5 +51,14 @@
       )
     ];
 
-  meta.name = "kernel";
+  meta = {
+    name = "kernel";
+
+    dependencies = [
+      {
+        url = "github:icedos/providers";
+        modules = [ "chaotic" ];
+      }
+    ];
+  };
 }
