@@ -37,5 +37,14 @@
       )
     ];
 
-  meta.name = "steamdeck";
+  meta = {
+    name = "steamdeck";
+
+    dependencies = [
+      {
+        url = "github:icedos/providers";
+        modules = [ "jovian" ];
+      }
+    ];
+  };
 }
