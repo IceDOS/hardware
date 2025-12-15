@@ -11,7 +11,7 @@
     in
     icedosLib.mkStrOption { default = defaultConfig.hostname; };
 
-  ouputs.nixosModules =
+  outputs.nixosModules =
     { ... }:
     [
       (
