@@ -39,7 +39,11 @@
 
     dependencies = [
       {
-        modules = [ "hostname" "kmscon" ];
+        modules = [
+          "hostname"
+          "kmscon"
+          "mounts"
+        ];
       }
     ];
   };

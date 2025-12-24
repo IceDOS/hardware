@@ -1,15 +1,21 @@
 { icedosLib, ... }:
 
 {
-  options.icedos.hardware.mounts =
+  options.icedos.hardware =
     let
       inherit (icedosLib) mkStrOption mkStrListOption mkSubmoduleListOption;
     in
-    mkSubmoduleListOption { default = [ ]; } {
-      path = mkStrOption { };
-      device = mkStrOption { };
-      fsType = mkStrOption { };
-      flags = mkStrListOption { };
+    {
+      mounts =
+
+        mkSubmoduleListOption { default = [ ]; } {
+          path = mkStrOption { };
+          device = mkStrOption { };
+          fsType = mkStrOption { };
+          flags = mkStrListOption { };
+        };
+
+      swapDevices = mkStrListOption { default = [ ]; };
     };
 
   outputs.nixosModules =
@@ -22,6 +28,9 @@
           ...
         }:
 
+        let
+          inherit (config.icedos.hardware) mounts swapDevices;
+        in
         {
           fileSystems = lib.listToAttrs (
             map (mount: {
@@ -32,8 +41,10 @@
                 fsType = mount.fsType;
                 options = mount.flags;
               };
-            }) config.icedos.hardware.mounts
+            }) mounts
           );
+
+          swapDevices = map (device: { inherit device; }) swapDevices;
         }
       )
     ];
