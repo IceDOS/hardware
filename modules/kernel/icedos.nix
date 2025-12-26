@@ -1,13 +1,15 @@
-{ icedosLib, ... }:
+{ icedosLib, lib, ... }:
 
 {
   options.icedos.hardware.kernel =
     let
+      inherit (lib) readFile;
+      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.kernel) swappiness version;
       inherit (icedosLib) mkNumberOption mkStrOption;
     in
     {
-      swappiness = mkNumberOption { default = 1; };
-      version = mkStrOption { default = "lts"; };
+      swappiness = mkNumberOption { default = swappiness; };
+      version = mkStrOption { default = version; };
     };
 
   outputs.nixosModules =
@@ -16,26 +18,28 @@
       (
         {
           config,
+          lib,
           pkgs,
           ...
         }:
 
         let
-          cfg = config.icedos;
-          kernel = cfg.hardware.kernel;
+          inherit (config.icedos.hardware.kernel) version swappiness;
+          inherit (lib) mkIf;
         in
         {
           boot = {
             kernelPackages =
               with pkgs;
-              {
-                latest = linuxPackages_latest;
-                lts = linuxPackages;
-                zen = linuxPackages_zen;
-              }
-              .${kernel.version};
+              mkIf (version != "")
+                {
+                  latest = linuxPackages_latest;
+                  lts = linuxPackages;
+                  zen = linuxPackages_zen;
+                }
+                .${version};
 
-            kernel.sysctl."vm.swappiness" = toString (kernel.swappiness);
+            kernel.sysctl."vm.swappiness" = toString swappiness;
           };
         }
       )
