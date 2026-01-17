@@ -15,12 +15,17 @@
         }:
 
         let
-          inherit (lib) mkIf;
+          inherit (builtins) any;
+          inherit (lib) hasAttr mkIf;
           inherit (pkgs) blueberry;
           inherit (config) icedos;
         in
         {
-          environment.systemPackages = mkIf (lib.hasAttr "hyprland" icedos.desktop or false) [ blueberry ];
+          environment.systemPackages = mkIf (any (name: hasAttr name icedos.desktop) [
+            "cosmic"
+            "hyprland"
+          ]) [ blueberry ];
+
           hardware.bluetooth.enable = true;
         }
       )
