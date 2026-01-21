@@ -1,0 +1,2 @@
+[icedos.hardware.openrgb]
+profile = "" # The profile name to load from at startup.
