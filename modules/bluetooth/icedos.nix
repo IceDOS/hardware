@@ -17,14 +17,14 @@
         let
           inherit (builtins) any;
           inherit (lib) hasAttr mkIf;
-          inherit (pkgs) blueberry;
+          inherit (pkgs) blueman;
           inherit (config) icedos;
         in
         {
           environment.systemPackages = mkIf (any (name: hasAttr name icedos.desktop) [
             "cosmic"
             "hyprland"
-          ]) [ blueberry ];
+          ]) [ blueman ];
 
           hardware.bluetooth.enable = true;
         }
