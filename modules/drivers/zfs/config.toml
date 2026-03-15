@@ -1,0 +1,3 @@
+[icedos.hardware.drivers.zfs]
+allowHibernation = false # Do not use with ZFS swap
+autoScrub = true # Data integrity checks monthly
