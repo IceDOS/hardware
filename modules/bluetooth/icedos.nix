@@ -18,15 +18,25 @@
           inherit (builtins) any;
           inherit (lib) hasAttr mkIf;
           inherit (pkgs) blueman;
-          inherit (config) icedos;
+          inherit (config.icedos) desktop hardware;
         in
         {
-          environment.systemPackages = mkIf (any (name: hasAttr name icedos.desktop) [
+          environment.systemPackages = mkIf (any (name: hasAttr name desktop) [
             "cosmic"
             "hyprland"
           ]) [ blueman ];
 
-          hardware.bluetooth.enable = true;
+          hardware.bluetooth = {
+            enable = true;
+
+            settings = {
+              General = {
+                ControllerMode = "bredr";
+                Experimental = true;
+                FastConnectable = (!hardware.devices.laptop);
+              };
+            };
+          };
         }
       )
     ];
