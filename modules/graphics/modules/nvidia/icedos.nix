@@ -1,17 +1,19 @@
-{ icedosLib, ... }:
+{ icedosLib, lib, ... }:
 {
   options.icedos.hardware.graphics.nvidia =
     let
       inherit (icedosLib) mkBoolOption mkNumberOption;
+
+      nvidia = (fromTOML (lib.readFile ./config.toml)).icedos.hardware.graphics.nvidia;
     in
     {
-      beta = mkBoolOption { default = false; };
-      cuda = mkBoolOption { default = true; };
-      openDrivers = mkBoolOption { default = false; };
+      beta = mkBoolOption { default = nvidia.beta; };
+      cuda = mkBoolOption { default = nvidia.cuda; };
+      openDrivers = mkBoolOption { default = nvidia.openDrivers; };
 
       powerLimit = {
-        enable = mkBoolOption { default = false; };
-        value = mkNumberOption { default = ""; };
+        enable = mkBoolOption { default = nvidia.powerLimit.enable; };
+        value = mkNumberOption { default = nvidia.powerLimit.value; };
       };
     };
 

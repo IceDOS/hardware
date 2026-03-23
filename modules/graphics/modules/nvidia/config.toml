@@ -1,8 +1,8 @@
 [icedos.hardware.graphics.nvidia]
-beta = true
-cuda = true
-openDrivers = true
+beta = false
+cuda = false
+openDrivers = false
 
 [icedos.hardware.graphics.nvidia.powerLimit]
-enable = true
-value = 242
+enable = false
+value = 0

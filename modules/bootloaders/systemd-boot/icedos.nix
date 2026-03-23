@@ -1,9 +1,16 @@
-{ icedosLib, ... }:
+{ icedosLib, lib, ... }:
 
 {
-  options.icedos.hardware.bootloaders.systemd-boot.mountPoint = icedosLib.mkStrOption {
-    default = "";
-  };
+  options.icedos.hardware.bootloaders.systemd-boot.mountPoint =
+    let
+      inherit
+        (
+          (fromTOML (lib.readFile ./config.toml)).icedos.hardware.bootloaders.systemd-boot
+        )
+        mountPoint
+        ;
+    in
+    icedosLib.mkStrOption { default = mountPoint; };
 
   outputs.nixosModules =
     { ... }:

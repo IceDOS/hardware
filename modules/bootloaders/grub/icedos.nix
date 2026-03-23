@@ -1,7 +1,16 @@
-{ icedosLib, ... }:
+{ icedosLib, lib, ... }:
 
 {
-  options.icedos.hardware.bootloaders.grub.device = icedosLib.mkStrOption { default = ""; };
+  options.icedos.hardware.bootloaders.grub.device =
+    let
+      inherit
+        (
+          (fromTOML (lib.readFile ./config.toml)).icedos.hardware.bootloaders.grub
+        )
+        device
+        ;
+    in
+    icedosLib.mkStrOption { default = device; };
 
   outputs.nixosModules =
     { ... }:

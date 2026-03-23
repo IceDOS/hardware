@@ -1,7 +1,16 @@
-{ icedosLib, ... }:
+{ icedosLib, lib, ... }:
 
 {
-  options.icedos.hardware.zram.percentage = icedosLib.mkNumberOption { default = 10; };
+  options.icedos.hardware.zram.percentage =
+    let
+      inherit
+        (
+          (fromTOML (lib.readFile ./config.toml)).icedos.hardware.zram
+        )
+        percentage
+        ;
+    in
+    icedosLib.mkNumberOption { default = percentage; };
 
   outputs.nixosModules =
     { ... }:
