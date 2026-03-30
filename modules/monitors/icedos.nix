@@ -1,4 +1,4 @@
-{ icedosLib, ... }:
+{ icedosLib, lib, ... }:
 
 {
   options.icedos.hardware.monitors =
@@ -9,16 +9,25 @@
         mkStrOption
         mkSubmoduleListOption
         ;
+
+      inherit (lib) head readFile;
+
+      inherit (head (fromTOML (readFile ./config.toml)).icedos.hardware.monitors)
+        disable
+        rotation
+        scaling
+        tenBit
+        ;
     in
     mkSubmoduleListOption { default = [ ]; } {
       name = mkStrOption { };
-      disable = mkBoolOption { default = false; };
+      disable = mkBoolOption { default = disable; };
       resolution = mkStrOption { };
       refreshRate = mkNumberOption { };
       position = mkStrOption { };
-      scaling = mkNumberOption { default = 1; };
-      rotation = mkNumberOption { default = 0; };
-      tenBit = mkBoolOption { default = false; };
+      scaling = mkNumberOption { default = scaling; };
+      rotation = mkNumberOption { default = rotation; };
+      tenBit = mkBoolOption { default = tenBit; };
     };
 
   outputs.nixosModules =

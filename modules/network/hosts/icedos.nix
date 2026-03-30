@@ -1,7 +1,12 @@
-{ icedosLib, ... }:
+{ icedosLib, lib, ... }:
 
 {
-  options.icedos.hardware.network.hosts = icedosLib.mkLinesOption { default = ""; };
+  options.icedos.hardware.network.hosts =
+    let
+      inherit (lib) readFile;
+      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.network) hosts;
+    in
+    icedosLib.mkLinesOption { default = hosts; };
 
   outputs.nixosModules =
     { ... }:

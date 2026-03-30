@@ -1,23 +1,26 @@
-{ icedosLib, ... }:
+{ icedosLib, lib, ... }:
 
 {
   options.icedos.hardware =
     let
       inherit (icedosLib) mkBoolOption;
+      inherit (lib) readFile;
 
-      defaultConfig =
-        let
-          inherit (builtins) readFile;
-        in
-        (fromTOML (readFile ./config.toml)).icedos.hardware;
+      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware)
+        devices
+        network
+        ;
+
+      inherit (devices) laptop server;
+      inherit (network) firewall;
     in
     {
       devices = {
-        laptop = mkBoolOption { default = defaultConfig.devices.laptop; };
-        server = mkBoolOption { default = defaultConfig.devices.server; };
+        laptop = mkBoolOption { default = laptop; };
+        server = mkBoolOption { default = server; };
       };
 
-      network.firewall = mkBoolOption { default = defaultConfig.network.firewall; };
+      network.firewall = mkBoolOption { default = firewall; };
     };
 
   outputs.nixosModules =

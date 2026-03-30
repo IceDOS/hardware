@@ -1,5 +1,2 @@
 [icedos.hardware.network]
-hosts = """
-192.168.2.99 git.dtek.gr
-192.168.2.100 git.dtek.com
-"""
+hosts = ""

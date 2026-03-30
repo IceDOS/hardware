@@ -1,15 +1,12 @@
-{ icedosLib, ... }:
+{ icedosLib, lib, ... }:
 
 {
   options.icedos.hardware.network.hostname =
     let
-      defaultConfig =
-        let
-          inherit (builtins) readFile;
-        in
-        (fromTOML (readFile ./config.toml)).icedos.hardware.network;
+      inherit (lib) readFile;
+      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.network) hostname;
     in
-    icedosLib.mkStrOption { default = defaultConfig.hostname; };
+    icedosLib.mkStrOption { default = hostname; };
 
   outputs.nixosModules =
     { ... }:

@@ -3,18 +3,28 @@
   options.icedos.hardware.graphics.nvidia =
     let
       inherit (icedosLib) mkBoolOption mkNumberOption;
+      inherit (lib) readFile;
 
-      nvidia = (fromTOML (lib.readFile ./config.toml)).icedos.hardware.graphics.nvidia;
+      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.graphics.nvidia)
+        beta
+        cuda
+        openDrivers
+        powerLimit
+        ;
     in
     {
-      beta = mkBoolOption { default = nvidia.beta; };
-      cuda = mkBoolOption { default = nvidia.cuda; };
-      openDrivers = mkBoolOption { default = nvidia.openDrivers; };
+      beta = mkBoolOption { default = beta; };
+      cuda = mkBoolOption { default = cuda; };
+      openDrivers = mkBoolOption { default = openDrivers; };
 
-      powerLimit = {
-        enable = mkBoolOption { default = nvidia.powerLimit.enable; };
-        value = mkNumberOption { default = nvidia.powerLimit.value; };
-      };
+      powerLimit =
+        let
+          inherit (powerLimit) enable value;
+        in
+        {
+          enable = mkBoolOption { default = enable; };
+          value = mkNumberOption { default = value; };
+        };
     };
 
   outputs.nixosModules =
@@ -70,6 +80,8 @@
                 command = "force-nvidia";
               in
               {
+                inherit command;
+
                 bin = "${pkgs.writeShellScript command ''
                   export __NV_PRIME_RENDER_OFFLOAD=1
                   export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
@@ -78,7 +90,6 @@
                   exec "$@"
                 ''}";
 
-                command = command;
                 help = "forces command to use nvidia gpu";
               }
             )
