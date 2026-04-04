@@ -31,9 +31,17 @@
 
             settings = {
               General = {
-                ControllerMode = "bredr";
+                ControllerMode = "dual";
                 Experimental = true;
                 FastConnectable = (!hardware.devices.laptop);
+                JustWorksRepairing = "always";
+                Privacy = "device";
+              };
+
+              LE = {
+                MinConnectionInterval = 7;
+                MaxConnectionInterval = 9;
+                ConnectionLatency = 0;
               };
             };
           };
