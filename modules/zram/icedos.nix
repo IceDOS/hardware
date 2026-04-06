@@ -3,12 +3,7 @@
 {
   options.icedos.hardware.zram.percentage =
     let
-      inherit
-        (
-          (fromTOML (lib.readFile ./config.toml)).icedos.hardware.zram
-        )
-        percentage
-        ;
+      inherit ((fromTOML (lib.readFile ./config.toml)).icedos.hardware.zram) percentage;
     in
     icedosLib.mkNumberOption { default = percentage; };
 

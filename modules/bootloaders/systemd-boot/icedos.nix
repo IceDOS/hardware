@@ -3,10 +3,7 @@
 {
   options.icedos.hardware.bootloaders.systemd-boot.mountPoint =
     let
-      inherit
-        (
-          (fromTOML (lib.readFile ./config.toml)).icedos.hardware.bootloaders.systemd-boot
-        )
+      inherit ((fromTOML (lib.readFile ./config.toml)).icedos.hardware.bootloaders.systemd-boot)
         mountPoint
         ;
     in

@@ -70,7 +70,7 @@
                   w:
                   let
                     cw = toString ((w + 1) + ((i - 1) * 10));
-                    cb = if (w == 9) then "0" else "${toString (w + 1)}";
+                    cb = if (w == 9) then "0" else toString (w + 1);
 
                     extraBind =
                       if (i == 4) then
@@ -112,7 +112,7 @@
           home-manager.users = mapAttrs (user: _: {
             wayland.windowManager.hyprland = mkIf hasHyprland {
               settings = {
-                bind = [ ] ++ workspaceBinds "" "workspace" ++ workspaceBinds "SHIFT" "movetoworkspace";
+                bind = workspaceBinds "" "workspace" ++ workspaceBinds "SHIFT" "movetoworkspace";
 
                 monitor = (
                   map (
