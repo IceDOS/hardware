@@ -13,10 +13,7 @@
             "amd_pstate.shared_mem=1"
           ];
 
-          kernelModules = [
-            "amd-pstate"
-            "msr"
-          ];
+          kernelModules = [ "msr" ];
         };
 
         hardware.cpu.amd.updateMicrocode = true;
