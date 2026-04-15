@@ -53,16 +53,15 @@
             boot.zfs.allowHibernation = allowHibernation;
             services.zfs.autoScrub.enable = autoScrub;
 
-            # NixOS generates zfs-import-<pool>.service with Wants=systemd-udev-settle.service
-            # (weak dep — doesn't wait for completion). This causes zpool import to scan
-            # /dev/disk/by-id before udev finishes creating symlinks, blocking forever on
-            # half-initialized devices (TimeoutStartUSec=infinity on oneshot services).
-            # Strengthening to Requires= ensures udev settles before import starts.
+            # zpool import scans /dev/disk/by-id before udev finishes creating symlinks,
+            # causing hangs on half-initialized devices. Run udevadm settle before import
+            # to ensure device symlinks exist. (systemd-udev-settle.service was removed
+            # in systemd 256, so we call udevadm settle directly via ExecStartPre.)
             # See: https://github.com/NixOS/nixpkgs/issues/73095
             systemd.services = listToAttrs (
               map (pool: {
                 name = "zfs-import-${pool}";
-                value.requires = [ "systemd-udev-settle.service" ];
+                value.serviceConfig.ExecStartPre = [ "${config.systemd.package}/bin/udevadm settle" ];
               }) zfsPools
             );
           }
