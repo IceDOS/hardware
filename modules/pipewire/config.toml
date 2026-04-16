@@ -1,0 +1,19 @@
+[icedos.hardware.pipewire.noiseCancellation]
+enable = false
+
+# true  = smart filter on the default mic (transparent, follows default source)
+# false = separate virtual mic that apps must explicitly select
+dynamic = true
+
+# true  = 1-channel rnnoise (mono mics native; stereo mics downmixed to mono)
+# false = 2-channel rnnoise (stereo mics preserved; mono mics upmixed, ~2x CPU)
+mono = true
+
+# How confident (%) rnnoise must be that a sound is speech before letting it through
+vadThreshold = 90
+
+# Ms to keep the gate open after speech stops, preventing abrupt mid-sentence cutoffs
+vadGracePeriod = 400
+
+# Ms of audio to retroactively restore when speech is detected, catching clipped first syllables
+retroactiveVadGrace = 100
