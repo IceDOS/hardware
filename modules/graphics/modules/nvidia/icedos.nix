@@ -34,7 +34,6 @@
         {
           config,
           lib,
-          pkgs,
           ...
         }:
 
@@ -75,24 +74,19 @@
             (hasAttr "docker" applications || hasAttr "podman" applications);
 
           icedos.applications.toolset.commands = mkIf (cfg.hardware.devices.laptop) [
-            (
-              let
-                command = "force-nvidia";
-              in
-              {
-                inherit command;
+            {
+              command = "force-nvidia";
 
-                bin = "${pkgs.writeShellScript command ''
-                  export __NV_PRIME_RENDER_OFFLOAD=1
-                  export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
-                  export __GLX_VENDOR_LIBRARY_NAME=nvidia
-                  export __VK_LAYER_NV_optimus=NVIDIA_only
-                  exec "$@"
-                ''}";
+              script = ''
+                export __NV_PRIME_RENDER_OFFLOAD=1
+                export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
+                export __GLX_VENDOR_LIBRARY_NAME=nvidia
+                export __VK_LAYER_NV_optimus=NVIDIA_only
+                exec "$@"
+              '';
 
-                help = "forces command to use nvidia gpu";
-              }
-            )
+              help = "forces command to use nvidia gpu";
+            }
           ];
 
           nixpkgs.config.cudaSupport = graphics.nvidia.cuda;
