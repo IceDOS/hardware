@@ -22,7 +22,6 @@
         in
         {
           environment.systemPackages = mkIf (any (name: hasAttr name desktop) [
-            "cosmic"
             "hyprland"
           ]) [ blueman ];
 
