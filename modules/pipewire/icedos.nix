@@ -89,6 +89,7 @@
               enable = true;
               alsa.enable = true;
               alsa.support32Bit = true;
+              extraLadspaPackages = [ pkgs.rnnoise-plugin ];
               pulse.enable = true;
             };
 
@@ -158,7 +159,7 @@
                           {
                             type = ladspa
                             name = rnnoise
-                            plugin = ${pkgs.rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so
+                            plugin = librnnoise_ladspa
                             label = ${if mono then "noise_suppressor_mono" else "noise_suppressor_stereo"}
                             control = {
                               "VAD Threshold (%)" ${toString vadThreshold}
