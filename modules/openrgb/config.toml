@@ -1,2 +1,4 @@
 [icedos.hardware.openrgb]
-profile = "" # The profile name to load from at startup.
+color = "" # Explicit color override as bare hex (e.g. "FF0000"). When set, wins over stylix/desktop accents. Ignored when `profile` is set.
+profile = "" # Profile to load (binary .orp). When empty, --color is used instead.
+stylix = true # When `color` is empty and stylix.enable is true, use the stylix accent slot; otherwise fall back to icedos.desktop.accentColor (or its GNOME mapping). Ignored when `profile` is set.
