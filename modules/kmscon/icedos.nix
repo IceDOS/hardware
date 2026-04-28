@@ -21,7 +21,7 @@
 
         let
           inherit (config.icedos.hardware.kmscon) autologinUser;
-          inherit (lib) mkIf;
+          inherit (lib) mkIf mkForce;
         in
         {
           services.kmscon = {
@@ -40,7 +40,7 @@
           # ("Failed to obtain file descriptor for drm device"). Drop the tty1
           # pull-in so kmscon stays on tty2..6 only (still reachable via the
           # autovt@.service alias upstream sets).
-          systemd.services."kmsconvt@tty1".wantedBy = lib.mkForce [ ];
+          systemd.services."kmsconvt@tty1".wantedBy = mkForce [ ];
         }
       )
     ];

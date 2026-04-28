@@ -3,7 +3,8 @@
 {
   options.icedos.hardware.bootloaders.grub.device =
     let
-      inherit ((fromTOML (lib.readFile ./config.toml)).icedos.hardware.bootloaders.grub) device;
+      inherit (lib) readFile;
+      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.bootloaders.grub) device;
     in
     icedosLib.mkStrOption { default = device; };
 

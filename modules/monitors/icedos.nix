@@ -49,7 +49,6 @@
             hasAttr
             imap
             length
-            mapAttrs
             mkIf
             optionals
             ;
@@ -109,51 +108,53 @@
               ) monitors)
             ];
 
-          home-manager.users = mapAttrs (user: _: {
-            wayland.windowManager.hyprland = mkIf hasHyprland {
-              settings = {
-                bind = workspaceBinds "" "workspace" ++ workspaceBinds "SHIFT" "movetoworkspace";
+          home-manager.sharedModules = [
+            {
+              wayland.windowManager.hyprland = mkIf hasHyprland {
+                settings = {
+                  bind = workspaceBinds "" "workspace" ++ workspaceBinds "SHIFT" "movetoworkspace";
 
-                monitor = (
-                  map (
-                    m:
-                    let
-                      name = m.name;
-                      resolution = m.resolution;
-                      refreshRate = toString (m.refreshRate);
-                      position = toString (m.position);
-                      scaling = toString (m.scaling);
-                      rotation = getMonitorRotation m;
-                      bitDepth = if (m.tenBit) then ",bitdepth,10" else "";
-                    in
-                    if (m.disable) then
-                      "${name},disable"
-                    else
-                      "${name},${resolution}@${refreshRate},${position},${scaling}${rotation}${bitDepth}"
-                  ) monitors
-                );
-
-                workspace = (
-                  concatLists (
-                    imap (
-                      i: m:
+                  monitor = (
+                    map (
+                      m:
                       let
                         name = m.name;
+                        resolution = m.resolution;
+                        refreshRate = toString (m.refreshRate);
+                        position = toString (m.position);
+                        scaling = toString (m.scaling);
+                        rotation = getMonitorRotation m;
+                        bitDepth = if (m.tenBit) then ",bitdepth,10" else "";
                       in
-                      genList (
-                        w:
+                      if (m.disable) then
+                        "${name},disable"
+                      else
+                        "${name},${resolution}@${refreshRate},${position},${scaling}${rotation}${bitDepth}"
+                    ) monitors
+                  );
+
+                  workspace = (
+                    concatLists (
+                      imap (
+                        i: m:
                         let
-                          cw = toString ((w + 1) + ((i - 1) * 10));
-                          default = if (w == 0) then ",default:true" else "";
+                          name = m.name;
                         in
-                        "${cw},monitor:${name}${default}"
-                      ) 10
-                    ) (filter (m: !m.disable) monitors)
-                  )
-                );
+                        genList (
+                          w:
+                          let
+                            cw = toString ((w + 1) + ((i - 1) * 10));
+                            default = if (w == 0) then ",default:true" else "";
+                          in
+                          "${cw},monitor:${name}${default}"
+                        ) 10
+                      ) (filter (m: !m.disable) monitors)
+                    )
+                  );
+                };
               };
-            };
-          }) cfg.users;
+            }
+          ];
         }
       )
     ];

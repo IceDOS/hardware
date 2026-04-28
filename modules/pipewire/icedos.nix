@@ -43,11 +43,7 @@
         }:
 
         let
-          inherit (lib)
-            mapAttrs
-            mkIf
-            ;
-
+          inherit (lib) optional;
           inherit (config.icedos.hardware.pipewire) noiseCancellation;
 
           inherit (noiseCancellation)
@@ -146,56 +142,53 @@
             }
           ];
 
-          home-manager.users = mapAttrs (
-            user: _:
-            mkIf noiseCancellation.enable {
-              home.file.".config/pipewire/pipewire.conf.d/99-input-denoising.conf".text = ''
-                context.modules = [
-                  {
-                    name = libpipewire-module-filter-chain
-                    args = {
-                      filter.graph = {
-                        nodes = [
-                          {
-                            type = ladspa
-                            name = rnnoise
-                            plugin = librnnoise_ladspa
-                            label = ${if mono then "noise_suppressor_mono" else "noise_suppressor_stereo"}
-                            control = {
-                              "VAD Threshold (%)" ${toString vadThreshold}
-                              "VAD Grace Period (ms)" ${toString vadGracePeriod}
-                              "Retroactive VAD Grace (ms)" ${toString retroactiveVadGrace}
-                            }
+          home-manager.sharedModules = optional noiseCancellation.enable {
+            home.file.".config/pipewire/pipewire.conf.d/99-input-denoising.conf".text = ''
+              context.modules = [
+                {
+                  name = libpipewire-module-filter-chain
+                  args = {
+                    filter.graph = {
+                      nodes = [
+                        {
+                          type = ladspa
+                          name = rnnoise
+                          plugin = librnnoise_ladspa
+                          label = ${if mono then "noise_suppressor_mono" else "noise_suppressor_stereo"}
+                          control = {
+                            "VAD Threshold (%)" ${toString vadThreshold}
+                            "VAD Grace Period (ms)" ${toString vadGracePeriod}
+                            "Retroactive VAD Grace (ms)" ${toString retroactiveVadGrace}
                           }
-                        ]
-                      }
-                      capture.props = {
-                        node.name =  "rnnoise_input.capture"
-                        node.passive = true
-                        audio.rate = 48000
-                      }
-                      playback.props = {
-                        node.name =  "rnnoise"
-                        media.class = Audio/Source
-                        audio.rate = 48000
-                        ${
-                          if dynamic then
-                            ''
-                              filter.smart = true
-                              filter.smart.name =  "rnnoise-input"
-                            ''
-                          else
-                            ''
-                              node.description =  "RNNoise"
-                            ''
                         }
+                      ]
+                    }
+                    capture.props = {
+                      node.name =  "rnnoise_input.capture"
+                      node.passive = true
+                      audio.rate = 48000
+                    }
+                    playback.props = {
+                      node.name =  "rnnoise"
+                      media.class = Audio/Source
+                      audio.rate = 48000
+                      ${
+                        if dynamic then
+                          ''
+                            filter.smart = true
+                            filter.smart.name =  "rnnoise-input"
+                          ''
+                        else
+                          ''
+                            node.description =  "RNNoise"
+                          ''
                       }
                     }
                   }
-                ]
-              '';
-            }
-          ) config.icedos.users;
+                }
+              ]
+            '';
+          };
         }
       )
     ];

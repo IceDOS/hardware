@@ -30,9 +30,10 @@
 
         let
           inherit (config.icedos.hardware) mounts swapDevices;
+          inherit (lib) listToAttrs;
         in
         {
-          fileSystems = lib.listToAttrs (
+          fileSystems = listToAttrs (
             map (mount: {
               name = mount.path;
 
