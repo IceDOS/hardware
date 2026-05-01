@@ -143,7 +143,7 @@
           ];
 
           home-manager.sharedModules = optional noiseCancellation.enable {
-            home.file.".config/pipewire/pipewire.conf.d/99-input-denoising.conf".text = ''
+            xdg.configFile."pipewire/pipewire.conf.d/99-input-denoising.conf".text = ''
               context.modules = [
                 {
                   name = libpipewire-module-filter-chain
