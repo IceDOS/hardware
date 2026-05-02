@@ -14,19 +14,21 @@
 
       inherit (head (fromTOML (readFile ./config.toml)).icedos.hardware.monitors)
         disable
+        overclock
         rotation
         scaling
         tenBit
         ;
     in
     mkSubmoduleListOption { default = [ ]; } {
-      name = mkStrOption { };
       disable = mkBoolOption { default = disable; };
-      resolution = mkStrOption { };
-      refreshRate = mkNumberOption { };
+      name = mkStrOption { };
+      overclock = mkBoolOption { default = overclock; };
       position = mkStrOption { };
-      scaling = mkNumberOption { default = scaling; };
+      refreshRate = mkNumberOption { };
+      resolution = mkStrOption { };
       rotation = mkNumberOption { default = rotation; };
+      scaling = mkNumberOption { default = scaling; };
       tenBit = mkBoolOption { default = tenBit; };
     };
 
@@ -37,6 +39,7 @@
         {
           config,
           lib,
+          pkgs,
           ...
         }:
 
@@ -44,13 +47,17 @@
           inherit (lib)
             concatLists
             concatMapStrings
+            elemAt
             filter
             genList
             hasAttr
             imap
             length
+            listToAttrs
             mkIf
             optionals
+            splitString
+            toInt
             ;
 
           getMonitorRotation =
@@ -90,6 +97,34 @@
           monitors = cfg.hardware.monitors;
           noMonitors = length monitors == 0;
           hasHyprland = hasAttr "hyprland" cfg.desktop;
+          ocMonitors = filter (m: !m.disable && m.overclock) monitors;
+          ocKey = m: "${m.name}_oc";
+
+          mkModeline =
+            m:
+            let
+              parts = splitString "x" m.resolution;
+              w = toInt (elemAt parts 0);
+              h = toInt (elemAt parts 1);
+              hz = m.refreshRate;
+              rb = if (hz / 60) * 60 == hz then "-r " else "";
+              drv =
+                pkgs.runCommand "modeline-${m.name}-${toString w}x${toString h}-${toString hz}"
+                  {
+                    nativeBuildInputs = [ pkgs.libxcvt ];
+                  }
+                  ''
+                    cvt ${rb}${toString w} ${toString h} ${toString hz} \
+                      | awk '/^Modeline/ { sub(/^Modeline +"[^"]*"[[:space:]]+/, ""); printf "%s", $0; exit }' \
+                      > $out
+                  '';
+              raw = builtins.readFile drv;
+              pclkMHz = toInt (elemAt (splitString "." (elemAt (splitString " " raw) 0)) 0);
+            in
+            if pclkMHz > 655 then
+              throw "icedos.hardware.monitors.${m.name}: pixel clock ${toString pclkMHz} MHz for ${m.resolution}@${toString hz}Hz exceeds the 655.35 MHz EDID 1.4 detailed-timing limit. Lower refreshRate, or pick a 60Hz multiple (60/120/240) so reduced-blanking applies."
+            else
+              raw;
         in
         {
           boot.kernelParams =
@@ -107,6 +142,26 @@
                 "video=${name}:${resolution}${bitDepth}@${refreshRate},rotate=${rotation}"
               ) monitors)
             ];
+
+          hardware.display = mkIf (ocMonitors != [ ]) {
+            edid.enable = true;
+
+            edid.modelines = listToAttrs (
+              map (m: {
+                name = ocKey m;
+                value = mkModeline m;
+              }) ocMonitors
+            );
+
+            outputs = listToAttrs (
+              map (m: {
+                name = m.name;
+                value = {
+                  edid = "${ocKey m}.bin";
+                };
+              }) ocMonitors
+            );
+          };
 
           home-manager.sharedModules = [
             {

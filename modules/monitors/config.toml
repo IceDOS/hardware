@@ -1,9 +1,10 @@
 [[icedos.hardware.monitors]]
-name = "" # Example: DP-2
 disable = false
-resolution = ""
-refreshRate = 0
+name = "" # Example: DP-2
+overclock = false # Inject a CVT-generated EDID so the kernel reports refreshRate as native (Wayland-compatible)
 position = "" # Example: 3840x0
-scaling = 1
+refreshRate = 0
+resolution = ""
 rotation = 0
+scaling = 1
 tenBit = false
