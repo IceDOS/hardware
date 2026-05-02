@@ -6,14 +6,12 @@
       inherit (lib) readFile;
 
       inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.drivers.zfs)
-        allowHibernation
         autoScrub
         ;
 
       inherit (icedosLib) mkBoolOption;
     in
     {
-      allowHibernation = mkBoolOption { default = allowHibernation; };
       autoScrub = mkBoolOption { default = autoScrub; };
     };
 
@@ -29,7 +27,7 @@
           }:
           let
             inherit (config) fileSystems icedos;
-            inherit (icedos.hardware.drivers.zfs) allowHibernation autoScrub;
+            inherit (icedos.hardware.drivers.zfs) autoScrub;
 
             inherit (lib)
               attrValues
@@ -50,7 +48,7 @@
           in
           {
             boot.supportedFilesystems.zfs = true;
-            boot.zfs.allowHibernation = allowHibernation;
+            boot.zfs.forceImportRoot = true;
             services.zfs.autoScrub.enable = autoScrub;
 
             # zpool import scans /dev/disk/by-id before udev finishes creating symlinks,
