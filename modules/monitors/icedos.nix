@@ -103,6 +103,8 @@
           mkModeline =
             m:
             let
+              inherit (icedosLib) validate;
+
               parts = splitString "x" m.resolution;
               w = toInt (elemAt parts 0);
               h = toInt (elemAt parts 1);
@@ -120,11 +122,13 @@
                   '';
               raw = builtins.readFile drv;
               pclkMHz = toInt (elemAt (splitString "." (elemAt (splitString " " raw) 0)) 0);
+              clockOk = validate.abort {
+                when = pclkMHz > 655;
+                path = "icedos.hardware.monitors.${m.name}.pixelClockMHz";
+                msg = "${toString pclkMHz} MHz for ${m.resolution}@${toString hz}Hz exceeds the 655.35 MHz EDID 1.4 detailed-timing limit. Lower refreshRate, or pick a 60Hz multiple (60/120/240) so reduced-blanking applies.";
+              };
             in
-            if pclkMHz > 655 then
-              throw "icedos.hardware.monitors.${m.name}: pixel clock ${toString pclkMHz} MHz for ${m.resolution}@${toString hz}Hz exceeds the 655.35 MHz EDID 1.4 detailed-timing limit. Lower refreshRate, or pick a 60Hz multiple (60/120/240) so reduced-blanking applies."
-            else
-              raw;
+            if clockOk then raw else raw;
         in
         {
           boot.kernelParams =
