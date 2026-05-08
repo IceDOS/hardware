@@ -38,11 +38,11 @@
         }:
 
         let
-          inherit (lib) mkIf;
-          cfg = config.icedos;
-          hardware = cfg.hardware;
-          graphics = hardware.graphics;
-          powerLimit = graphics.nvidia.powerLimit;
+          inherit (lib) hasAttr mkIf;
+          inherit (config.icedos) applications hardware;
+          inherit (hardware) graphics;
+          inherit (graphics) nvidia;
+          inherit (nvidia) powerLimit;
           nvidia_x11 = config.boot.kernelPackages.nvidia_x11.bin;
         in
         {
@@ -50,15 +50,15 @@
 
           hardware.nvidia = {
             modesetting.enable = true;
-            open = graphics.nvidia.openDrivers;
+            open = nvidia.openDrivers;
 
             package =
-              if (graphics.nvidia.beta) then
+              if nvidia.beta then
                 config.boot.kernelPackages.nvidiaPackages.beta
               else
                 config.boot.kernelPackages.nvidiaPackages.stable;
 
-            prime = mkIf (cfg.hardware.devices.laptop) {
+            prime = mkIf hardware.devices.laptop {
               offload.enable = true;
               intelBusId = "PCI:0:2:0";
               nvidiaBusId = "PCI:1:0:0";
@@ -67,13 +67,9 @@
 
           # Enable nvidia gpu acceleration for containers
           hardware.nvidia-container-toolkit.enable =
-            let
-              inherit (lib) hasAttr;
-              applications = cfg.applications;
-            in
-            (hasAttr "docker" applications || hasAttr "podman" applications);
+            hasAttr "docker" applications || hasAttr "podman" applications;
 
-          icedos.applications.toolset.commands = mkIf (cfg.hardware.devices.laptop) [
+          icedos.applications.toolset.commands = mkIf hardware.devices.laptop [
             {
               command = "force-nvidia";
 
@@ -89,10 +85,10 @@
             }
           ];
 
-          nixpkgs.config.cudaSupport = graphics.nvidia.cuda;
+          nixpkgs.config.cudaSupport = nvidia.cuda;
 
           # Set nvidia gpu power limit
-          systemd.services.nv-power-limit = mkIf (powerLimit.enable) {
+          systemd.services.nv-power-limit = mkIf powerLimit.enable {
             enable = true;
             description = "Nvidia power limit control";
             after = [
@@ -106,7 +102,7 @@
 
             serviceConfig = {
               User = "root";
-              ExecStart = "${nvidia_x11}/bin/nvidia-smi --power-limit=${toString (powerLimit.value)}";
+              ExecStart = "${nvidia_x11}/bin/nvidia-smi --power-limit=${toString powerLimit.value}";
             };
 
             wantedBy = [ "multi-user.target" ];

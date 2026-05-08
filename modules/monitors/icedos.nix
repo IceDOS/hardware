@@ -62,7 +62,7 @@
 
           getMonitorRotation =
             m:
-            if (m.name == "eDP-1" && cfg.hardware.devices.steamdeck) then
+            if (m.name == "eDP-1" && hardware.devices.steamdeck) then
               ",transform,3"
             else
               ",transform,${toString m.rotation}";
@@ -93,10 +93,11 @@
               ) (filter (m: !m.disable) monitors)
             ));
 
-          cfg = config.icedos;
-          monitors = cfg.hardware.monitors;
+          inherit (config.icedos) desktop hardware;
+          inherit (hardware) monitors;
+
           noMonitors = length monitors == 0;
-          hasHyprland = hasAttr "hyprland" cfg.desktop;
+          hasHyprland = hasAttr "hyprland" desktop;
           ocMonitors = filter (m: !m.disable && m.overclock) monitors;
           ocKey = m: "${m.name}_oc";
 

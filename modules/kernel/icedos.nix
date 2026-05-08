@@ -24,23 +24,17 @@
         }:
 
         let
-          inherit (config.icedos) hardware;
-          inherit (hardware.kernel) variant swappiness;
           inherit (lib) hasAttr mkIf;
+          inherit (config) icedos;
+          inherit (icedos) hardware tweaks;
+          inherit (hardware.kernel) swappiness variant;
 
           kernelVariant = "linuxPackages_${variant}";
         in
         {
           boot = {
             kernel.sysctl."vm.swappiness" =
-              if
-                (
-                  let
-                    cfg = config.icedos;
-                  in
-                  hasAttr "tweaks" cfg && hasAttr "cachyos" cfg.tweaks && cfg.tweaks.cachyos.useCachyosZramProfile
-                )
-              then
+              if hasAttr "tweaks" icedos && hasAttr "cachyos" tweaks && tweaks.cachyos.useCachyosZramProfile then
                 "150"
               else
                 toString swappiness;

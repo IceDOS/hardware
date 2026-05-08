@@ -4,6 +4,7 @@
   options.icedos.hardware.bootloaders.systemd-boot.mountPoint =
     let
       inherit (lib) readFile;
+
       inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.bootloaders.systemd-boot)
         mountPoint
         ;
@@ -20,18 +21,21 @@
         }:
 
         let
-          cfg = config.icedos;
+          inherit (config) icedos;
+          inherit (icedos) hardware system;
+          inherit (hardware.bootloaders.systemd-boot) mountPoint;
+          inherit (system) generations;
         in
         {
           boot.loader = {
             efi = {
               canTouchEfiVariables = true;
-              efiSysMountPoint = cfg.hardware.bootloaders.systemd-boot.mountPoint;
+              efiSysMountPoint = mountPoint;
             };
 
             systemd-boot = {
               enable = true;
-              configurationLimit = cfg.system.generations;
+              configurationLimit = generations;
               consoleMode = "max";
             };
 

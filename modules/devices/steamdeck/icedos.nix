@@ -20,16 +20,19 @@
 
         let
           inherit (lib) mkIf;
-          cfg = config.icedos;
+          inherit (config) icedos;
+          inherit (icedos) hardware system;
+          inherit (system) isFirstBuild;
+          inherit (hardware.devices.steamdeck) lcdOverclock;
         in
         {
-          jovian.devices.steamdeck = mkIf (!cfg.system.isFirstBuild) {
+          jovian.devices.steamdeck = mkIf (!isFirstBuild) {
             enable = true;
             enableGyroDsuService = true;
             autoUpdate = true;
           };
 
-          nixpkgs.overlays = mkIf (cfg.hardware.devices.steamdeck.lcdOverclock) [
+          nixpkgs.overlays = mkIf lcdOverclock [
             (final: super: {
               gamescope = super.gamescope.overrideAttrs (old: {
                 patches = (old.patches or [ ]) ++ [ ./patch.diff ];

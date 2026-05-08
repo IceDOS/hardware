@@ -14,17 +14,20 @@
       (
         { config, ... }:
         let
-          cfg = config.icedos;
+          inherit (config) icedos;
+          inherit (icedos) hardware system;
+          inherit (hardware.bootloaders.grub) device;
+          inherit (system) generations;
         in
         {
           boot = {
             loader = {
               grub = {
+                inherit device;
                 enable = true;
-                device = cfg.hardware.bootloaders.grub.device;
                 useOSProber = true;
                 enableCryptodisk = true;
-                configurationLimit = cfg.system.generations;
+                configurationLimit = generations;
               };
 
               timeout = 1;

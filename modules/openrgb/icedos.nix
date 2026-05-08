@@ -5,6 +5,7 @@
     let
       inherit (icedosLib) mkBoolOption mkStrOption;
       inherit (lib) readFile;
+
       inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.openrgb)
         color
         profile
@@ -31,10 +32,11 @@
           inherit (icedosLib) generateAccentColor;
           inherit (lib) hasAttr;
 
-          cfg = config.icedos.hardware.openrgb;
-          desktop = config.icedos.desktop;
+          inherit (config.icedos) desktop hardware;
+          inherit (hardware) openrgb;
+          inherit (openrgb) color profile;
 
-          stylixOn = (config.stylix.enable or false) && cfg.stylix;
+          stylixOn = (config.stylix.enable or false) && openrgb.stylix;
           stylixColors = config.lib.stylix.colors or { };
           stylixAccentSlot = desktop.stylix.accentBase16Slot or "base0D";
           stylixAccentHex = stylixColors.${stylixAccentSlot} or null;
@@ -53,10 +55,10 @@
             in
             builtins.substring 1 (builtins.stringLength raw - 1) raw;
 
-          # Priority: explicit `cfg.color` override > stylix accent > desktop fallback.
+          # Priority: explicit `color` override > stylix accent > desktop fallback.
           accentHex =
-            if cfg.color != "" then
-              cfg.color
+            if color != "" then
+              color
             else if (stylixOn && stylixAccentHex != null) then
               stylixAccentHex
             else
@@ -64,7 +66,7 @@
 
           # profile xor color: a named profile is loaded as-is (its saved
           # colors win); otherwise we apply our chosen accent uniformly.
-          cmdArgs = if cfg.profile != "" then "--profile ${cfg.profile}" else "--color ${accentHex}";
+          cmdArgs = if profile != "" then "--profile ${profile}" else "--color ${accentHex}";
         in
         {
           services.hardware.openrgb.enable = true;
