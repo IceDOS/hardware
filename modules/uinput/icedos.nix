@@ -1,20 +1,20 @@
-{ ... }:
+{ icedosLib, ... }:
 
 {
   outputs.nixosModules =
     { ... }:
     [
       (
-        { config, lib, ... }:
+        { config, ... }:
 
         let
           inherit (config.icedos) users;
-          inherit (lib) mapAttrs;
+          inherit (icedosLib.users) mkGroupInjector;
         in
         {
           hardware.uinput.enable = true;
 
-          users.users = mapAttrs (_: _: { extraGroups = [ "uinput" ]; }) users;
+          users.users = mkGroupInjector "uinput" users;
         }
       )
     ];
