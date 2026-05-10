@@ -3,19 +3,17 @@
 {
   options.icedos.hardware.openrgb =
     let
-      inherit (icedosLib) mkBoolOption mkStrOption;
+      inherit (icedosLib) mkStrOption;
       inherit (lib) readFile;
 
       inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.openrgb)
         color
         profile
-        stylix
         ;
     in
     {
       color = mkStrOption { default = color; };
       profile = mkStrOption { default = profile; };
-      stylix = mkBoolOption { default = stylix; };
     };
 
   outputs.nixosModules =
@@ -24,45 +22,18 @@
       (
         {
           config,
-          lib,
           pkgs,
           ...
         }:
         let
-          inherit (icedosLib) generateAccentColor;
-          inherit (lib) hasAttr;
-
-          inherit (config.icedos) desktop hardware;
+          inherit (config.icedos) hardware;
           inherit (hardware) openrgb;
           inherit (openrgb) color profile;
 
-          stylixOn = (config.stylix.enable or false) && openrgb.stylix;
-          stylixColors = config.lib.stylix.colors or { };
-          stylixAccentSlot = desktop.stylix.accentBase16Slot or "base0D";
-          stylixAccentHex = stylixColors.${stylixAccentSlot} or null;
+          resolved = icedosLib.generateAccent config;
 
-          # Desktop fallback: GNOME accent if gnome is enabled, otherwise the
-          # icedos.desktop.accentColor TOML value. `generateAccentColor` returns
-          # a `#XXXXXX` string; openrgb's --color wants bare hex digits, so we
-          # strip the leading `#` (same idiom as cosmic/.../appearance/icedos.nix).
-          desktopAccentHex =
-            let
-              raw = generateAccentColor {
-                inherit (desktop) accentColor;
-                gnomeAccentColor = desktop.gnome.accentColor or "blue";
-                hasGnome = hasAttr "gnome" desktop;
-              };
-            in
-            builtins.substring 1 (builtins.stringLength raw - 1) raw;
-
-          # Priority: explicit `color` override > stylix accent > desktop fallback.
-          accentHex =
-            if color != "" then
-              color
-            else if (stylixOn && stylixAccentHex != null) then
-              stylixAccentHex
-            else
-              desktopAccentHex;
+          # Priority: explicit `color` override > resolver accent.
+          accentHex = if color != "" then color else resolved.hexNoHash;
 
           # profile xor color: a named profile is loaded as-is (its saved
           # colors win); otherwise we apply our chosen accent uniformly.
