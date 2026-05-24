@@ -17,3 +17,6 @@ vadGracePeriod = 400
 
 # Ms of audio to retroactively restore when speech is detected, catching clipped first syllables
 retroactiveVadGrace = 100
+
+[icedos.hardware.pipewire.echoCancellation]
+enable = false

@@ -1,35 +1,53 @@
 { icedosLib, lib, ... }:
 
 {
-  options.icedos.hardware.pipewire.noiseCancellation =
-    let
-      inherit (icedosLib) mkBoolOption mkNumberOption;
+  options.icedos.hardware.pipewire = {
+    echoCancellation =
+      let
+        inherit (icedosLib) mkBoolOption;
 
-      inherit
-        (
-          let
-            inherit (lib) readFile;
-          in
-          (fromTOML (readFile ./config.toml)).icedos.hardware.pipewire.noiseCancellation
-        )
-        enable
-        dynamic
-        mono
-        vadThreshold
-        vadGracePeriod
-        retroactiveVadGrace
-        ;
-    in
-    {
-      enable = mkBoolOption { default = enable; };
+        inherit
+          (
+            let
+              inherit (lib) readFile;
+            in
+            (fromTOML (readFile ./config.toml)).icedos.hardware.pipewire.echoCancellation
+          )
+          enable
+          ;
+      in
+      {
+        enable = mkBoolOption { default = enable; };
+      };
 
-      dynamic = mkBoolOption { default = dynamic; };
-      mono = mkBoolOption { default = mono; };
+    noiseCancellation =
+      let
+        inherit (icedosLib) mkBoolOption mkNumberOption;
 
-      vadThreshold = mkNumberOption { default = vadThreshold; };
-      vadGracePeriod = mkNumberOption { default = vadGracePeriod; };
-      retroactiveVadGrace = mkNumberOption { default = retroactiveVadGrace; };
-    };
+        inherit
+          (
+            let
+              inherit (lib) readFile;
+            in
+            (fromTOML (readFile ./config.toml)).icedos.hardware.pipewire.noiseCancellation
+          )
+          enable
+          dynamic
+          mono
+          vadThreshold
+          vadGracePeriod
+          retroactiveVadGrace
+          ;
+      in
+      {
+        enable = mkBoolOption { default = enable; };
+        dynamic = mkBoolOption { default = dynamic; };
+        mono = mkBoolOption { default = mono; };
+        retroactiveVadGrace = mkNumberOption { default = retroactiveVadGrace; };
+        vadGracePeriod = mkNumberOption { default = vadGracePeriod; };
+        vadThreshold = mkNumberOption { default = vadThreshold; };
+      };
+  };
 
   outputs.nixosModules =
     { ... }:
@@ -43,8 +61,8 @@
         }:
 
         let
-          inherit (lib) optional;
-          inherit (config.icedos.hardware.pipewire) noiseCancellation;
+          inherit (lib) mkIf optional;
+          inherit (config.icedos.hardware.pipewire) echoCancellation noiseCancellation;
 
           inherit (noiseCancellation)
             dynamic
@@ -87,6 +105,39 @@
               alsa.support32Bit = true;
               extraLadspaPackages = [ pkgs.rnnoise-plugin ];
               pulse.enable = true;
+
+              extraConfig.pipewire = mkIf echoCancellation.enable {
+                "99-echo-cancel" = {
+                  "context.modules" = [
+                    {
+                      name = "libpipewire-module-echo-cancel";
+                      args = {
+                        "monitor.mode" = true;
+                        "audio.rate" = 48000;
+                        "audio.channels" = 2;
+                        "audio.position" = [
+                          "FL"
+                          "FR"
+                        ];
+                        "node.latency" = "1024/48000";
+
+                        "capture.props" = {
+                          "node.passive" = true;
+                        };
+
+                        "source.props" = {
+                          "node.name" = "echo-cancel-source";
+                          "node.description" = "Echo Cancelled Microphone";
+                          "priority.session" = 2500;
+                          "priority.driver" = 2500;
+                        };
+
+                        "aec.args" = { };
+                      };
+                    }
+                  ];
+                };
+              };
             };
 
             pulseaudio.enable = false;
