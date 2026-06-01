@@ -28,7 +28,7 @@
             enable = true;
             autologinUser = mkIf (autologinUser != "") autologinUser;
             extraOptions = "--term xterm-256color";
-            hwRender = true;
+            config.hwaccel = true;
           };
 
           # Nixpkgs commit 54f2c962 ("nixos/kmscon: remove dependency on agetty",
