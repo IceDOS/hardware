@@ -30,7 +30,7 @@
 
             settings = {
               General = {
-                ControllerMode = "dual";
+                ControllerMode = "bredr";
                 Experimental = true;
                 FastConnectable = (!hardware.devices.laptop);
                 JustWorksRepairing = "always";
