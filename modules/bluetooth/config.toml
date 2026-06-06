@@ -1,0 +1,2 @@
+[icedos.hardware.bluetooth]
+controllerMode = "bredr"
