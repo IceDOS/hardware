@@ -1,6 +1,17 @@
-{ ... }:
+{ lib, icedosLib, ... }:
 
 {
+  options.icedos.hardware.kernel.cachyos.applyWithoutSubstituter =
+    let
+      inherit (icedosLib) mkBoolOption;
+      inherit (lib) readFile;
+
+      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.kernel.cachyos)
+        applyWithoutSubstituter
+        ;
+    in
+    mkBoolOption { default = applyWithoutSubstituter; };
+
   inputs.nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
 
   outputs.nixosModules =
@@ -19,7 +30,7 @@
           inherit (boot) kernelPackages supportedFilesystems;
           inherit (kernelPackages) zfs_cachyos;
           inherit (supportedFilesystems) zfs;
-          inherit (icedos.hardware.kernel) variant;
+          inherit (icedos.hardware.kernel) cachyos variant;
           inherit (inputs) icedos-state nix-cachyos-kernel;
 
           inherit (lib)
@@ -34,15 +45,18 @@
 
           substituter = "https://attic.xuyh0120.win/lantian";
 
-          hasSubstituter = elem substituter (
-            if (icedos-state != null) then importJSON "${icedos-state}/substituters" else [ ]
-          );
+          shouldApplyCachyosKernel =
+            elem substituter (if (icedos-state != null) then importJSON "${icedos-state}/substituters" else [ ])
+            || cachyos.applyWithoutSubstituter;
         in
         {
           boot.kernelPackages =
-            if hasSubstituter then mkForce cachyosKernels."linuxPackages-cachyos-${variant}" else linuxPackages;
+            if shouldApplyCachyosKernel then
+              mkForce cachyosKernels."linuxPackages-cachyos-${variant}"
+            else
+              linuxPackages;
 
-          boot.zfs.package = mkIf (hasSubstituter && zfs) zfs_cachyos;
+          boot.zfs.package = mkIf (shouldApplyCachyosKernel && zfs) zfs_cachyos;
           nixpkgs.overlays = [ default ];
           nix.settings.substituters = [ substituter ];
           nix.settings.trusted-public-keys = [ "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc=" ];
