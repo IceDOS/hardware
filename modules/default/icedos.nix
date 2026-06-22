@@ -46,6 +46,7 @@
           "hostname"
           "kmscon"
           "mounts"
+          "network-manager"
         ];
       }
     ];
