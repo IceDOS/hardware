@@ -69,7 +69,7 @@
           hardware.nvidia-container-toolkit.enable =
             hasAttr "docker" applications || hasAttr "podman" applications;
 
-          icedos.applications.toolset.commands = mkIf hardware.devices.laptop [
+          icedos.system.toolset.commands = mkIf hardware.devices.laptop [
             {
               command = "force-nvidia";
 
