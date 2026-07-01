@@ -16,7 +16,7 @@
             inherit (icedosLib.bash) genHelpFlags;
           in
           {
-            icedos.applications.toolset.commands = [
+            icedos.system.toolset.commands = [
               {
                 command = "btrfs-zstd";
 

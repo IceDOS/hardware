@@ -148,7 +148,7 @@
 
           environment.systemPackages = with pkgs; [ pwvucontrol ];
 
-          icedos.applications.toolset.commands = [
+          icedos.system.toolset.commands = [
             {
               command = "pipewire";
               help = "pipewire audio controls";

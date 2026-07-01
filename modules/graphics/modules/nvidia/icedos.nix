@@ -38,8 +38,8 @@
         }:
 
         let
-          inherit (lib) hasAttr mkIf;
-          inherit (config.icedos) applications hardware;
+          inherit (lib) mkIf;
+          inherit (config.icedos) hardware;
           inherit (hardware) graphics;
           inherit (graphics) nvidia;
           inherit (nvidia) powerLimit;
@@ -67,9 +67,9 @@
 
           # Enable nvidia gpu acceleration for containers
           hardware.nvidia-container-toolkit.enable =
-            hasAttr "docker" applications || hasAttr "podman" applications;
+            config.virtualisation.docker.enable || config.virtualisation.podman.enable;
 
-          icedos.applications.toolset.commands = mkIf hardware.devices.laptop [
+          icedos.system.toolset.commands = mkIf hardware.devices.laptop [
             {
               command = "force-nvidia";
 
