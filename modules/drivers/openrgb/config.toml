@@ -1,3 +1,3 @@
-[icedos.hardware.openrgb]
+[icedos.hardware.drivers.openrgb]
 color = "" # Explicit color override as bare hex (e.g. "FF0000"). When set, wins over `icedos.desktop.accentColor`. Ignored when `profile` is set.
 profile = "" # Profile to load (binary .orp). When empty, --color is used instead.

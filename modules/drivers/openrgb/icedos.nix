@@ -1,12 +1,12 @@
 { icedosLib, lib, ... }:
 
 {
-  options.icedos.hardware.openrgb =
+  options.icedos.hardware.drivers.openrgb =
     let
       inherit (icedosLib) mkStrOption;
       inherit (lib) readFile;
 
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.openrgb)
+      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.drivers.openrgb)
         color
         profile
         ;
@@ -27,7 +27,7 @@
         }:
         let
           inherit (config.icedos) hardware;
-          inherit (hardware) openrgb;
+          inherit (hardware.drivers) openrgb;
           inherit (openrgb) color profile;
 
           resolved = icedosLib.generateAccent config;

@@ -1,0 +1,3 @@
+[icedos.hardware.kernel.scx]
+scheduler = "lavd"
+extraArgs = []
