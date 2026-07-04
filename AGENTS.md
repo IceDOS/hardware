@@ -17,7 +17,7 @@
 
 ## Purpose
 
-Hardware and low-level system configuration: kernels, GPU drivers, bootloaders, audio,
+Hardware and low-level system configuration: kernels, GPU drivers, audio,
 peripherals, storage mounts, networking.
 
 ## Layout
@@ -25,7 +25,7 @@ peripherals, storage mounts, networking.
 - `modules/<name>/{icedos.nix,config.toml}` per module; `flake.nix` exposes them via
   `icedosLib.scanModules { path = ./modules; filename = "icedos.nix"; }`.
 - Some modules nest sub-modules: e.g. `graphics/` has `graphics/modules/` (radeon,
-  nvidia, …) and `bootloaders/` splits into `grub` and `systemd-boot`.
+  nvidia, …).
 
 ## Module shape here
 
@@ -42,7 +42,7 @@ that's the **user's** call.
 ## Notable modules / gotchas
 
 - `kernel` (variant selection, e.g. `latest-lto-x86_64-v3`), `graphics/radeon` &
-  `graphics/nvidia`, `bootloaders/systemd-boot`, `pipewire` (echo/noise cancellation),
+  `graphics/nvidia`, `pipewire` (echo/noise cancellation),
   `bluetooth`, `openrgb`, `zram`, `uinput`, `upower`, `monitors`, `mounts`, `network`.
 - `scx` (CPU scheduler), `lact` & `low-latency-vulkan-layer` (GPU), `power-profiles-daemon`,
   `samba` (file shares), `solaar`, `input-remapper`, `ambiled` (peripherals/LED).
