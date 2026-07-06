@@ -1,15 +1,19 @@
 { icedosLib, lib, ... }:
 
 {
-  options.icedos.hardware.network.manager.applet =
+  options.icedos.hardware.network.manager =
     let
       inherit (lib) readFile;
 
       inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.network.manager)
         applet
+        enable
         ;
     in
-    icedosLib.mkBoolOption { default = applet; };
+    {
+      applet = icedosLib.mkBoolOption { default = applet; };
+      enable = icedosLib.mkBoolOption { default = enable; };
+    };
 
   outputs.nixosModules =
     { ... }:
@@ -26,10 +30,10 @@
           inherit (lib) mkIf;
           inherit (icedosLib.users) mkGroupInjector;
           inherit (config.icedos) hardware users;
-          inherit (hardware.network.manager) applet;
+          inherit (hardware.network.manager) enable applet;
         in
 
-        {
+        mkIf enable {
           networking.networkmanager.enable = true;
           users.users = mkGroupInjector "networkmanager" users;
 
