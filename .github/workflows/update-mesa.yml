@@ -1,0 +1,88 @@
+name: Update Mesa Overlays
+
+on:
+  schedule:
+    # Every 15 minutes (UTC). GitHub may delay or skip scheduled runs under load,
+    # and they only run on the default branch.
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Never run two updaters at once; let an in-flight one finish.
+concurrency:
+  group: update-mesa
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: nixbuild/nix-quick-install-action@v30
+        with:
+          nix_conf: |
+            experimental-features = nix-command flakes
+            nix-path = nixpkgs=channel:nixos-unstable
+
+      - name: Run mesa update script
+        run: nix-shell modules/graphics/modules/mesa/update.sh
+
+      - name: Detect changes
+        id: changes
+        run: |
+          if git diff --quiet modules/graphics/modules/mesa/; then
+            echo "changed=false" >>"$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >>"$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          cd modules/graphics/modules/mesa
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Message reflects whichever overlay pins actually changed:
+          #   both         -> "update(mesa): git -> <sha>, rc -> <ver>"
+          #   one          -> "update(mesa): git -> <sha>"  or  "update(mesa): rc -> <ver>"
+          #   patches only -> "update(mesa): sync patches"
+          body=""
+          append() { if [ -n "$body" ]; then body+=", "; fi; body+="$1"; }
+          if ! git diff --quiet git.json; then
+            append "git -> $(jq -r '.rev' git.json | cut -c1-12)"
+          fi
+          if ! git diff --quiet rc.json; then
+            append "rc -> $(jq -r '.version' rc.json)"
+          fi
+          if [ -n "$body" ]; then msg="update(mesa): $body"; else msg="update(mesa): sync patches"; fi
+
+          git add rc.json git.json patches/
+          git commit -m "$msg"
+          git push
+
+      - name: Mint cache-server dispatch token
+        id: app-token
+        if: steps.changes.outputs.changed == 'true'
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.DISPATCH_APP_ID }}
+          private-key: ${{ secrets.DISPATCH_APP_PRIVATE_KEY }}
+          owner: IceDOS
+          repositories: cache-server
+
+      - name: Trigger cache-server build
+        if: steps.changes.outputs.changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: 'IceDOS',
+              repo: 'cache-server',
+              workflow_id: 'nix-build.yml',
+              ref: 'main',
+            });

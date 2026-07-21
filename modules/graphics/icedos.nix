@@ -12,5 +12,13 @@
       }
     ];
 
-  meta.name = "graphics";
+  meta = {
+    name = "graphics";
+
+    dependencies = [
+      {
+        modules = [ "mesa" ];
+      }
+    ];
+  };
 }
