@@ -1,10 +1,11 @@
-name: Update Mesa Overlays
+name: Update low-latency-vulkan-layer
 
 on:
   schedule:
-    # Every 15 minutes (UTC). GitHub may delay or skip scheduled runs under load,
-    # and they only run on the default branch.
-    - cron: "*/15 * * * *"
+    # Daily (UTC), on its own minute so this repo's updaters never push at the same time.
+    # GitHub may delay or skip scheduled runs under load, and they only run on the
+    # default branch.
+    - cron: "20 5 * * *"
   workflow_dispatch:
 
 permissions:
@@ -12,17 +13,17 @@ permissions:
 
 # Never run two updaters at once; let an in-flight one finish.
 concurrency:
-  group: update-mesa
+  group: update-low-latency-vulkan-layer
   cancel-in-progress: false
 
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      # main is ruleset-protected ("changes must be made through a pull request"), and
-      # github-actions[bot] holds no repository role, so role-based bypasses do not cover
-      # it. The App is a bypass actor instead — mint its token up front and use it for the
-      # checkout credentials, the push, and the cache-server dispatch.
+      # main may be ruleset-protected ("changes must be made through a pull request"),
+      # and github-actions[bot] holds no repository role, so role-based bypasses would
+      # not cover it. The App is a bypass actor instead — mint its token up front and use
+      # it for the checkout credentials, the push, and the cache-server dispatch.
       - name: Mint app token
         id: app-token
         uses: actions/create-github-app-token@v2
@@ -42,19 +43,33 @@ jobs:
         with:
           token: ${{ steps.app-token.outputs.token }}
 
+      # update.sh sources core/lib/update-lib.sh. CI only checks out this repo, so core
+      # is fetched alongside it; the script falls back to a sibling checkout when run
+      # from a local IceDOS tree, so .icedos-core never exists outside CI.
+      - uses: actions/checkout@v4
+        with:
+          repository: IceDOS/core
+          path: .icedos-core
+
       - uses: nixbuild/nix-quick-install-action@v30
         with:
           nix_conf: |
             experimental-features = nix-command flakes
             nix-path = nixpkgs=channel:nixos-unstable
 
-      - name: Run mesa update script
-        run: nix-shell modules/graphics/modules/mesa/update.sh
+      - name: Read current pin
+        id: before
+        run: echo "version=$(jq -r '.version' modules/drivers/low-latency-vulkan-layer/source.json)" >>"$GITHUB_OUTPUT"
+
+      - name: Run low-latency-vulkan-layer update script
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: nix-shell modules/drivers/low-latency-vulkan-layer/update.sh
 
       - name: Detect changes
         id: changes
         run: |
-          if git diff --quiet modules/graphics/modules/mesa/; then
+          if git diff --quiet modules/drivers/low-latency-vulkan-layer/; then
             echo "changed=false" >>"$GITHUB_OUTPUT"
           else
             echo "changed=true" >>"$GITHUB_OUTPUT"
@@ -63,26 +78,13 @@ jobs:
       - name: Commit and push
         if: steps.changes.outputs.changed == 'true'
         run: |
-          cd modules/graphics/modules/mesa
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Message reflects whichever overlay pins actually changed:
-          #   both         -> "update(mesa): git -> <sha>, rc -> <ver>"
-          #   one          -> "update(mesa): git -> <sha>"  or  "update(mesa): rc -> <ver>"
-          #   patches only -> "update(mesa): sync patches"
-          body=""
-          append() { if [ -n "$body" ]; then body+=", "; fi; body+="$1"; }
-          if ! git diff --quiet git.json; then
-            append "git -> $(jq -r '.rev' git.json | cut -c1-12)"
-          fi
-          if ! git diff --quiet rc.json; then
-            append "rc -> $(jq -r '.version' rc.json)"
-          fi
-          if [ -n "$body" ]; then msg="update(mesa): $body"; else msg="update(mesa): sync patches"; fi
+          new=$(jq -r '.version' modules/drivers/low-latency-vulkan-layer/source.json)
+          git add -A modules/drivers/low-latency-vulkan-layer
+          git commit -m "update(low-latency-vulkan-layer): ${{ steps.before.outputs.version }} -> $new"
 
-          git add rc.json git.json patches/
-          git commit -m "$msg"
           # Sibling updaters push to this same branch, so a push can be rejected even
           # after a successful rebase: another job can land in the window between the
           # two. Retry until this one wins.

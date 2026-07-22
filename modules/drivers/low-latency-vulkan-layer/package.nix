@@ -7,15 +7,19 @@
   vulkan-utility-libraries,
 }:
 
-stdenv.mkDerivation rec {
+let
+  # Pin refreshed by ./update.sh; `rev` is tracked separately from `version` so an
+  # upstream tag-prefix change does not need a package edit.
+  source = builtins.fromJSON (builtins.readFile ./source.json);
+in
+stdenv.mkDerivation {
   pname = "low-latency-vulkan-layer";
-  version = "0.2.0";
+  inherit (source) version;
 
   src = fetchFromGitHub {
     owner = "Korthos-Software";
     repo = "low_latency_layer";
-    rev = "v${version}";
-    hash = "sha256-mnGAH0m19wOkWEowpcPRHXQSc6HGYW+CFYxjPF2onk4=";
+    inherit (source) rev hash;
   };
 
   nativeBuildInputs = [ cmake ];

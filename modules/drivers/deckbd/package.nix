@@ -7,15 +7,18 @@
   ...
 }:
 
+let
+  # Upstream never tags; update.sh tracks main's HEAD. See ./update.sh.
+  source = builtins.fromJSON (builtins.readFile ./source.json);
+in
 stdenv.mkDerivation rec {
   name = "deckbd";
-  version = "git";
+  inherit (source) version;
 
   src = fetchFromGitHub {
     owner = "ninlives";
     repo = name;
-    rev = "327a8c91159e1b7faa2f12b5e11060b2eb9947a8";
-    sha256 = "T7iYl1xWtk39XMUUWm1pK0WVm5UK656HmqWHKDmJ220=";
+    inherit (source) rev hash;
   };
 
   buildInputs = [
