@@ -2,7 +2,7 @@
 
 {
   options.icedos.hardware.pipewire = {
-    echoCancellation =
+    echo-cancellation =
       let
         inherit (icedosLib) mkBoolOption;
 
@@ -11,7 +11,7 @@
             let
               inherit (lib) readFile;
             in
-            (fromTOML (readFile ./config.toml)).icedos.hardware.pipewire.echoCancellation
+            (fromTOML (readFile ./config.toml)).icedos.hardware.pipewire.echo-cancellation
           )
           enable
           ;
@@ -20,7 +20,7 @@
         enable = mkBoolOption { default = enable; };
       };
 
-    noiseCancellation =
+    noise-cancellation =
       let
         inherit (icedosLib) mkBoolOption mkNumberOption;
 
@@ -29,7 +29,7 @@
             let
               inherit (lib) readFile;
             in
-            (fromTOML (readFile ./config.toml)).icedos.hardware.pipewire.noiseCancellation
+            (fromTOML (readFile ./config.toml)).icedos.hardware.pipewire.noise-cancellation
           )
           enable
           dynamic
@@ -62,9 +62,9 @@
 
         let
           inherit (lib) mkIf optional;
-          inherit (config.icedos.hardware.pipewire) echoCancellation noiseCancellation;
+          inherit (config.icedos.hardware.pipewire) echo-cancellation noise-cancellation;
 
-          inherit (noiseCancellation)
+          inherit (noise-cancellation)
             dynamic
             mono
             vadThreshold
@@ -106,7 +106,7 @@
               extraLadspaPackages = [ pkgs.rnnoise-plugin ];
               pulse.enable = true;
 
-              extraConfig.pipewire = mkIf echoCancellation.enable {
+              extraConfig.pipewire = mkIf echo-cancellation.enable {
                 "99-echo-cancel" = {
                   "context.modules" = [
                     {
@@ -193,7 +193,7 @@
             }
           ];
 
-          home-manager.sharedModules = optional noiseCancellation.enable {
+          home-manager.sharedModules = optional noise-cancellation.enable {
             xdg.configFile."pipewire/pipewire.conf.d/99-input-denoising.conf".text = ''
               context.modules = [
                 {

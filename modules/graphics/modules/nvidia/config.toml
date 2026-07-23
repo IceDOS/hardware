@@ -3,6 +3,6 @@ beta = false
 cuda = false
 openDrivers = false
 
-[icedos.hardware.graphics.nvidia.powerLimit]
+[icedos.hardware.graphics.nvidia.power-limit]
 enable = false
 value = 0

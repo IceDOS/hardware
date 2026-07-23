@@ -1,4 +1,4 @@
-[icedos.hardware.pipewire.noiseCancellation]
+[icedos.hardware.pipewire.noise-cancellation]
 enable = false
 
 # true  = smart filter on the default mic (transparent, follows default source)
@@ -18,5 +18,5 @@ vadGracePeriod = 400
 # Ms of audio to retroactively restore when speech is detected, catching clipped first syllables
 retroactiveVadGrace = 100
 
-[icedos.hardware.pipewire.echoCancellation]
+[icedos.hardware.pipewire.echo-cancellation]
 enable = false

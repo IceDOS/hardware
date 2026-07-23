@@ -9,7 +9,7 @@
         beta
         cuda
         openDrivers
-        powerLimit
+        power-limit
         ;
     in
     {
@@ -17,9 +17,9 @@
       cuda = mkBoolOption { default = cuda; };
       openDrivers = mkBoolOption { default = openDrivers; };
 
-      powerLimit =
+      power-limit =
         let
-          inherit (powerLimit) enable value;
+          inherit (power-limit) enable value;
         in
         {
           enable = mkBoolOption { default = enable; };
@@ -42,7 +42,7 @@
           inherit (config.icedos) hardware;
           inherit (hardware) graphics;
           inherit (graphics) nvidia;
-          inherit (nvidia) powerLimit;
+          inherit (nvidia) power-limit;
           nvidia_x11 = config.boot.kernelPackages.nvidia_x11.bin;
         in
         {
@@ -88,7 +88,7 @@
           nixpkgs.config.cudaSupport = nvidia.cuda;
 
           # Set nvidia gpu power limit
-          systemd.services.nv-power-limit = mkIf powerLimit.enable {
+          systemd.services.nv-power-limit = mkIf power-limit.enable {
             enable = true;
             description = "Nvidia power limit control";
             after = [
@@ -102,7 +102,7 @@
 
             serviceConfig = {
               User = "root";
-              ExecStart = "${nvidia_x11}/bin/nvidia-smi --power-limit=${toString powerLimit.value}";
+              ExecStart = "${nvidia_x11}/bin/nvidia-smi --power-limit=${toString power-limit.value}";
             };
 
             wantedBy = [ "multi-user.target" ];

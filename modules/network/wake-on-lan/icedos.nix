@@ -1,11 +1,11 @@
 { icedosLib, lib, ... }:
 
 {
-  options.icedos.hardware.network.wakeOnLan.interfaces =
+  options.icedos.hardware.network.wake-on-lan.interfaces =
     let
       inherit (icedosLib) mkStrListOption;
       inherit (lib) readFile;
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.network.wakeOnLan) interfaces;
+      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.network.wake-on-lan) interfaces;
     in
     mkStrListOption { default = interfaces; };
 
@@ -22,8 +22,8 @@
 
         let
           inherit (lib) genAttrs mkIf;
-          inherit (config.icedos.hardware.network) firewall wakeOnLan;
-          inherit (wakeOnLan) interfaces;
+          inherit (config.icedos.hardware.network) firewall wake-on-lan;
+          inherit (wake-on-lan) interfaces;
         in
         {
           environment.systemPackages = with pkgs; [

@@ -1,2 +1,2 @@
-[icedos.hardware.network.wakeOnLan]
+[icedos.hardware.network.wake-on-lan]
 interfaces = []
