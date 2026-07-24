@@ -10,9 +10,9 @@
         mkSubmoduleListOption
         ;
 
-      inherit (lib) head readFile;
+      inherit (lib) head importTOML;
 
-      inherit (head (fromTOML (readFile ./config.toml)).icedos.hardware.monitors)
+      inherit (head (importTOML ./config.toml).icedos.hardware.monitors)
         disable
         overclock
         rotation

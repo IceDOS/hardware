@@ -9,9 +9,9 @@
         inherit
           (
             let
-              inherit (lib) readFile;
+              inherit (lib) importTOML;
             in
-            (fromTOML (readFile ./config.toml)).icedos.hardware.pipewire.echo-cancellation
+            (importTOML ./config.toml).icedos.hardware.pipewire.echo-cancellation
           )
           enable
           ;
@@ -27,9 +27,9 @@
         inherit
           (
             let
-              inherit (lib) readFile;
+              inherit (lib) importTOML;
             in
-            (fromTOML (readFile ./config.toml)).icedos.hardware.pipewire.noise-cancellation
+            (importTOML ./config.toml).icedos.hardware.pipewire.noise-cancellation
           )
           enable
           dynamic

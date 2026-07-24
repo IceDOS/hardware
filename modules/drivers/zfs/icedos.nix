@@ -3,9 +3,9 @@
 {
   options.icedos.hardware.drivers.zfs =
     let
-      inherit (lib) readFile;
+      inherit (lib) importTOML;
 
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.drivers.zfs)
+      inherit ((importTOML ./config.toml).icedos.hardware.drivers.zfs)
         autoScrub
         ;
 

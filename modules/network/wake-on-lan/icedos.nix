@@ -4,8 +4,8 @@
   options.icedos.hardware.network.wake-on-lan.interfaces =
     let
       inherit (icedosLib) mkStrListOption;
-      inherit (lib) readFile;
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.network.wake-on-lan) interfaces;
+      inherit (lib) importTOML;
+      inherit ((importTOML ./config.toml).icedos.hardware.network.wake-on-lan) interfaces;
     in
     mkStrListOption { default = interfaces; };
 

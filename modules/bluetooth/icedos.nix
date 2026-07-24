@@ -3,8 +3,8 @@
 {
   options.icedos.hardware.bluetooth.controllerMode =
     let
-      inherit (lib) readFile;
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.bluetooth) controllerMode;
+      inherit (lib) importTOML;
+      inherit ((importTOML ./config.toml).icedos.hardware.bluetooth) controllerMode;
     in
     icedosLib.mkEnumOption
       {

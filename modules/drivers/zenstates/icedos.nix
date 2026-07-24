@@ -3,8 +3,8 @@
 {
   options.icedos.hardware.drivers.zenstates.serviceArgs =
     let
-      inherit (lib) readFile;
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.drivers.zenstates) serviceArgs;
+      inherit (lib) importTOML;
+      inherit ((importTOML ./config.toml).icedos.hardware.drivers.zenstates) serviceArgs;
     in
     icedosLib.mkStrOption { default = serviceArgs; };
 

@@ -4,9 +4,9 @@
   options.icedos.hardware.kernel.cachyos.applyWithoutSubstituter =
     let
       inherit (icedosLib) mkBoolOption;
-      inherit (lib) readFile;
+      inherit (lib) importTOML;
 
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.kernel.cachyos)
+      inherit ((importTOML ./config.toml).icedos.hardware.kernel.cachyos)
         applyWithoutSubstituter
         ;
     in

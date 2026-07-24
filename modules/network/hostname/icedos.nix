@@ -3,8 +3,8 @@
 {
   options.icedos.hardware.network.hostname =
     let
-      inherit (lib) readFile;
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.network) hostname;
+      inherit (lib) importTOML;
+      inherit ((importTOML ./config.toml).icedos.hardware.network) hostname;
     in
     icedosLib.mkStrOption { default = hostname; };
 

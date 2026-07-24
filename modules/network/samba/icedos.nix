@@ -5,7 +5,7 @@
     let
       inherit (lib)
         head
-        readFile
+        importTOML
         ;
 
       inherit (icedosLib)
@@ -17,7 +17,7 @@
         mkSubmoduleListOption
         ;
 
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.network.samba)
+      inherit ((importTOML ./config.toml).icedos.hardware.network.samba)
         workgroup
         serverString
         serverRole
@@ -35,7 +35,7 @@
         enableNmbd
         ;
 
-      inherit ((fromTOML (readFile ./shares.toml)).icedos.hardware.network.samba)
+      inherit ((importTOML ./shares.toml).icedos.hardware.network.samba)
         shares
         ;
     in

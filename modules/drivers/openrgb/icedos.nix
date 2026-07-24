@@ -4,9 +4,9 @@
   options.icedos.hardware.drivers.openrgb =
     let
       inherit (icedosLib) mkStrOption;
-      inherit (lib) readFile;
+      inherit (lib) importTOML;
 
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.drivers.openrgb)
+      inherit ((importTOML ./config.toml).icedos.hardware.drivers.openrgb)
         color
         profile
         ;

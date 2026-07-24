@@ -3,9 +3,9 @@
 {
   options.icedos.hardware.network.manager =
     let
-      inherit (lib) readFile;
+      inherit (lib) importTOML;
 
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.network.manager)
+      inherit ((importTOML ./config.toml).icedos.hardware.network.manager)
         applet
         enable
         ;

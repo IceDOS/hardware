@@ -3,8 +3,8 @@
 {
   options.icedos.hardware.kernel.scx =
     let
-      inherit (lib) readFile;
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.kernel.scx) extraArgs scheduler;
+      inherit (lib) importTOML;
+      inherit ((importTOML ./config.toml).icedos.hardware.kernel.scx) extraArgs scheduler;
     in
     {
       extraArgs = icedosLib.mkStrListOption { default = extraArgs; };

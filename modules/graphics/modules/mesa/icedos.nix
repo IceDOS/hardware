@@ -4,8 +4,8 @@
   options.icedos.hardware.graphics.mesa =
     let
       inherit (icedosLib) mkBoolOption;
-      inherit (lib) readFile;
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.graphics.mesa) rc git;
+      inherit (lib) importTOML;
+      inherit ((importTOML ./config.toml).icedos.hardware.graphics.mesa) rc git;
     in
     {
       rc = mkBoolOption { default = rc; };

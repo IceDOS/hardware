@@ -3,9 +3,9 @@
   options.icedos.hardware.graphics.nvidia =
     let
       inherit (icedosLib) mkBoolOption mkNumberOption;
-      inherit (lib) readFile;
+      inherit (lib) importTOML;
 
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.graphics.nvidia)
+      inherit ((importTOML ./config.toml).icedos.hardware.graphics.nvidia)
         beta
         cuda
         openDrivers

@@ -4,8 +4,8 @@
   options.icedos.hardware.drivers.power-profiles-daemon.profile =
     let
       inherit (icedosLib) mkStrOption;
-      inherit (lib) readFile;
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.drivers.power-profiles-daemon) profile;
+      inherit (lib) importTOML;
+      inherit ((importTOML ./config.toml).icedos.hardware.drivers.power-profiles-daemon) profile;
     in
     mkStrOption { default = profile; };
 

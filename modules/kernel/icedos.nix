@@ -3,8 +3,8 @@
 {
   options.icedos.hardware.kernel =
     let
-      inherit (lib) readFile;
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.kernel) swappiness variant;
+      inherit (lib) importTOML;
+      inherit ((importTOML ./config.toml).icedos.hardware.kernel) swappiness variant;
       inherit (icedosLib) mkNumberOption mkStrOption;
     in
     {

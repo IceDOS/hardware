@@ -4,8 +4,8 @@
   options.icedos.hardware.kmscon.autologinUser =
     let
       inherit (icedosLib) mkStrOption;
-      inherit (lib) readFile;
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.kmscon) autologinUser;
+      inherit (lib) importTOML;
+      inherit ((importTOML ./config.toml).icedos.hardware.kmscon) autologinUser;
     in
     mkStrOption { default = autologinUser; };
 

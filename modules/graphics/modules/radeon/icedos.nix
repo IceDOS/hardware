@@ -4,8 +4,8 @@
   options.icedos.hardware.graphics.radeon =
     let
       inherit (icedosLib) mkBoolOption mkStrOption;
-      inherit (lib) readFile;
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.graphics.radeon) featureMask rocm;
+      inherit (lib) importTOML;
+      inherit ((importTOML ./config.toml).icedos.hardware.graphics.radeon) featureMask rocm;
     in
     {
       featureMask = mkStrOption { default = featureMask; };

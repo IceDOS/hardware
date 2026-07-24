@@ -3,8 +3,8 @@
 {
   options.icedos.hardware.devices.steamdeck.lcdOverclock =
     let
-      inherit (lib) readFile;
-      inherit ((fromTOML (readFile ./config.toml)).icedos.hardware.devices.steamdeck) lcdOverclock;
+      inherit (lib) importTOML;
+      inherit ((importTOML ./config.toml).icedos.hardware.devices.steamdeck) lcdOverclock;
     in
     icedosLib.mkBoolOption { default = lcdOverclock; };
 
