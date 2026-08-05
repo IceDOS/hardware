@@ -1,2 +1,3 @@
 [icedos.hardware.bluetooth]
 controllerMode = "bredr"
+justWorksRepairing = "always" # allow Just-Works re-pairing of bonded devices (Xbox pads); "never" is strictest

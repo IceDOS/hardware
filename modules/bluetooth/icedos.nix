@@ -1,21 +1,37 @@
 { icedosLib, lib, ... }:
 
 {
-  options.icedos.hardware.bluetooth.controllerMode =
+  options.icedos.hardware.bluetooth =
     let
       inherit (lib) importTOML;
-      inherit ((importTOML ./config.toml).icedos.hardware.bluetooth) controllerMode;
+      inherit ((importTOML ./config.toml).icedos.hardware.bluetooth) controllerMode justWorksRepairing;
     in
-    icedosLib.mkEnumOption
-      {
-        path = "icedos.hardware.bluetooth.controllerMode";
-        source = ./config.toml;
-        default = controllerMode;
-      }
-      [
-        "bredr"
-        "dual"
-      ];
+    {
+      controllerMode =
+        icedosLib.mkEnumOption
+          {
+            path = "icedos.hardware.bluetooth.controllerMode";
+            source = ./config.toml;
+            default = controllerMode;
+          }
+          [
+            "bredr"
+            "dual"
+          ];
+
+      justWorksRepairing =
+        icedosLib.mkEnumOption
+          {
+            path = "icedos.hardware.bluetooth.justWorksRepairing";
+            source = ./config.toml;
+            default = justWorksRepairing;
+          }
+          [
+            "never"
+            "confirm"
+            "always"
+          ];
+    };
 
   outputs.nixosModules =
     { ... }:
@@ -61,7 +77,7 @@
                 ControllerMode = bluetooth.controllerMode;
                 Experimental = true;
                 FastConnectable = (!devices.laptop);
-                JustWorksRepairing = "always";
+                JustWorksRepairing = bluetooth.justWorksRepairing;
                 Privacy = "device";
               };
 
