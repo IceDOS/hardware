@@ -22,6 +22,7 @@
       (
         {
           config,
+          lib,
           pkgs,
           ...
         }:
@@ -37,9 +38,20 @@
 
           # profile xor color: a named profile is loaded as-is (its saved
           # colors win); otherwise we apply our chosen accent uniformly.
-          cmdArgs = if profile != "" then "--profile ${profile}" else "--color ${accentHex}";
+          cmdArgs =
+            if profile != "" then
+              "--profile ${lib.escapeShellArg profile}"
+            else
+              "--color ${lib.escapeShellArg accentHex}";
         in
         {
+          assertions = [
+            {
+              assertion = color == "" || builtins.match "^[0-9A-Fa-f]{6}(,[0-9A-Fa-f]{6})*$" color != null;
+              message = "icedos.hardware.drivers.openrgb.color: must be one or more comma-separated bare 6-digit hex values (e.g. \"FF0000\" or \"FF0000,00FF00\") when set.";
+            }
+          ];
+
           services.hardware.openrgb.enable = true;
 
           systemd.services.openrgb-profile-setter = {
