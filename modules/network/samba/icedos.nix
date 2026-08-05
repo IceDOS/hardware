@@ -104,6 +104,7 @@
 
         let
           inherit (lib)
+            concatLists
             concatStringsSep
             listToAttrs
             mkIf
@@ -131,6 +132,16 @@
             ;
 
           boolYN = b: if b then "yes" else "no";
+
+          # INI atoms may be bool/int/float/null; formats.ini renders those without
+          # newlines. List values are spliced element-by-element into the value, so
+          # recurse into them — their string elements are emitted verbatim.
+          hasNewline =
+            v:
+            if builtins.isList v then
+              builtins.any hasNewline v
+            else
+              builtins.isString v && builtins.match ".*[\r\n].*" v != null;
 
           mkShare = share: {
             name = share.name;
@@ -173,10 +184,50 @@
           // extraGlobalSettings;
         in
         {
-          assertions = map (s: {
-            assertion = s.name != "" && s.path != "";
-            message = "icedos.hardware.network.samba.shares: 'name' and 'path' must be non-empty for every share.";
-          }) shares;
+          assertions = concatLists [
+            (map (s: {
+              assertion = s.name != "" && s.path != "";
+              message = "icedos.hardware.network.samba.shares: 'name' and 'path' must be non-empty for every share.";
+            }) shares)
+            (map (s: {
+              assertion = builtins.match "^[A-Za-z0-9 _.-]+$" s.name != null && lib.toLower s.name != "global";
+              message = "icedos.hardware.network.samba.shares: share name '${s.name}' is not a valid smb.conf section name (allowed: letters, digits, spaces, '_', '.', '-'; 'global' is reserved).";
+            }) shares)
+            (map (s: {
+              assertion =
+                !(builtins.any (f: hasNewline f) (
+                  [
+                    s.path
+                    s.comment
+                    s.forceUser
+                    s.forceGroup
+                  ]
+                  ++ s.validUsers
+                  ++ s.writeList
+                ));
+              message = "icedos.hardware.network.samba.shares: a field of share '${s.name}' contains a newline, which would inject extra smb.conf directives.";
+            }) shares)
+            (map (s: {
+              assertion =
+                !(builtins.any (k: hasNewline k || hasNewline s.extraSettings.${k}) (
+                  builtins.attrNames s.extraSettings
+                ));
+              message = "icedos.hardware.network.samba.shares: share '${s.name}' has a key or value in extraSettings containing a newline, which would inject extra smb.conf directives.";
+            }) shares)
+            (
+              let
+                flatKeys = builtins.attrNames extraGlobalSettings;
+                flatVals = builtins.attrValues extraGlobalSettings;
+              in
+              [
+                {
+                  assertion =
+                    !(builtins.any (k: hasNewline k) flatKeys) && !(builtins.any (v: hasNewline v) flatVals);
+                  message = "icedos.hardware.network.samba.extraGlobalSettings: a key or value contains a newline, which would inject extra smb.conf directives.";
+                }
+              ]
+            )
+          ];
 
           services.samba = {
             inherit openFirewall;
