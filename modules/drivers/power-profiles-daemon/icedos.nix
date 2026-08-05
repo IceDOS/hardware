@@ -15,6 +15,7 @@
       (
         {
           config,
+          lib,
           pkgs,
           ...
         }:
@@ -46,7 +47,7 @@
                   ExecStart = "${pkgs.writeShellScriptBin "power-profiles-daemon-profile" ''
                     ${icedosLib.bash.exportSystemPath}
 
-                    powerprofilesctl set ${profile}
+                    powerprofilesctl set ${lib.escapeShellArg profile}
                   ''}/bin/power-profiles-daemon-profile";
 
                   Nice = "-20";
