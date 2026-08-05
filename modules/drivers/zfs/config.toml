@@ -1,3 +1,5 @@
 [icedos.hardware.drivers.zfs]
-allowHibernation = false # Do not use with ZFS swap
+allowHibernation = false # Permit hibernation with ZFS swap; when false the module aborts if boot.resumeDevice is set
 autoScrub = true # Data integrity checks monthly
+forceImportRoot = true # Import root pool even if exported elsewhere (see option description)
+hostId = "" # 8-hex ZFS host identifier; empty leaves networking.hostId unset (nixpkgs aborts if ZFS enabled) — set to your pool's current hostid before enabling
