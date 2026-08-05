@@ -38,11 +38,22 @@
             importJSON
             mkForce
             mkIf
+            optional
             ;
 
           inherit (nix-cachyos-kernel.overlays) default;
           inherit (pkgs) cachyosKernels linuxPackages;
 
+          # The cachyos kernel builds are pulled from a third-party binary cache
+          # (attic.xuyh0120.win, operator xuyh0120). The substituter is always
+          # offered (that is the bootstrap step — /etc/icedos/substituters records
+          # it, which next generation's shouldApplyCachyosKernel sees). Only once
+          # the module actually applies the cachyos kernel does it add that store's
+          # signature key to nix.settings.trusted-public-keys for the WHOLE system,
+          # so every path that cache serves is trusted to have been built faithfully.
+          # The nix-cachyos-kernel input is flake-lock-pinned to a specific rev.
+          # applyWithoutSubstituter forces the cachyos kernel even when the cache is
+          # not already configured; when the cache is configured nix may prefer it.
           substituter = "https://attic.xuyh0120.win/lantian";
 
           shouldApplyCachyosKernel =
@@ -50,6 +61,21 @@
             || cachyos.applyWithoutSubstituter;
         in
         {
+          warnings = optional (!shouldApplyCachyosKernel) ''
+            cachyos-kernel: the cachyos kernel is NOT applied in this generation.
+            This build only registers the lantian substituter (nix.settings.substituters);
+            it is picked up from /etc/icedos/substituters only after the new generation
+            is activated. To actually use the cachyos kernel:
+              1. apply this generation: 'icedos rebuild' activates immediately;
+                 'icedos rebuild --boot' needs a reboot to apply it (a bare --build
+                 only builds — re-run 'icedos rebuild' without --build to activate);
+              2. re-run 'icedos rebuild' — the registered substituter is now visible
+                 and the cachyos kernel is applied;
+              3. that generation also needs a switch/reboot to boot the new kernel.
+            Set icedos.hardware.kernel.cachyos.applyWithoutSubstituter = true to skip
+            the substituter bootstrap and apply the kernel from source next rebuild.
+          '';
+
           boot.kernelPackages =
             if shouldApplyCachyosKernel then
               mkForce cachyosKernels."linuxPackages-cachyos-${variant}"
@@ -59,7 +85,9 @@
           boot.zfs.package = mkIf (shouldApplyCachyosKernel && zfs) zfs_cachyos;
           nixpkgs.overlays = [ default ];
           nix.settings.substituters = [ substituter ];
-          nix.settings.trusted-public-keys = [ "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc=" ];
+          nix.settings.trusted-public-keys = mkIf shouldApplyCachyosKernel [
+            "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
+          ];
         }
       )
     ];
