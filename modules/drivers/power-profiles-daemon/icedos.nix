@@ -24,7 +24,7 @@
           inherit (config) icedos;
           inherit (icedos.hardware.drivers.power-profiles-daemon) profile;
 
-          sessionTargets = icedosLib.systemd.desktopSessionTargets icedos;
+          sessionTargets = icedosLib.systemd.desktopSessionTargets config;
         in
         {
           services.power-profiles-daemon.enable = true;
@@ -60,5 +60,14 @@
       )
     ];
 
-  meta.name = "power-profiles-daemon";
+  meta = {
+    name = "power-profiles-daemon";
+
+    dependencies = [
+      {
+        url = "github:icedos/desktop";
+        modules = [ "default" ];
+      }
+    ];
+  };
 }

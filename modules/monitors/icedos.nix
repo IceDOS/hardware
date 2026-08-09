@@ -50,7 +50,6 @@
             elemAt
             filter
             genList
-            hasAttr
             imap
             length
             listToAttrs
@@ -93,11 +92,15 @@
               ) (filter (m: !m.disable) monitors)
             ));
 
-          inherit (config.icedos) desktop hardware;
+          inherit (config.icedos) hardware;
           inherit (hardware) monitors;
 
           noMonitors = length monitors == 0;
-          hasHyprland = hasAttr "hyprland" desktop;
+          hasHyprland = icedosLib.hasModule {
+            inherit config;
+            url = "github:icedos/hyprland";
+            modules = [ "default" ];
+          };
           ocMonitors = filter (m: !m.disable && m.overclock) monitors;
           ocKey = m: "${m.name}_oc";
 
