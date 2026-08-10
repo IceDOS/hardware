@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#! nix-shell -i bash -p git curl jq nix
+#! nix-shell -i bash -p git curl jq nix gnutar
 
 set -euo pipefail
 
@@ -169,8 +169,21 @@ update_git() {
   local hash
   hash=$(compute_hash "$TMP_DIR/git.tar.gz")
   info "  Hash: $hash"
-  write_pin "$GIT_JSON" "git" "$git_rev" "$hash"
-  info "  Git updated: $git_rev"
+
+  # VERSION becomes part of the Nix derivation name, so gate it to a safe
+  # charset and match the archive prefix by wildcard instead of assuming
+  # GitLab's `mesa-<rev>/` layout. Pipefail-safe: a missing, unreadable, or
+  # name-unsafe VERSION falls through to the bare short rev warning below.
+  local git_version version
+  git_version=$(tar -xzOf "$TMP_DIR/git.tar.gz" --wildcards --no-wildcards-match-slash '*/VERSION' 2>/dev/null | head -1 | tr -d '\r' || true)
+  if [[ "$git_version" =~ ^[A-Za-z0-9._+-]+$ ]]; then
+    version="${git_version}-${git_rev:0:7}"
+  else
+    version="${git_rev:0:7}"
+    info "  WARNING: could not read a usable VERSION from source; using bare short rev $version"
+  fi
+  write_pin "$GIT_JSON" "$version" "$git_rev" "$hash"
+  info "  Git updated: $version"
 }
 
 # --- Main ---
