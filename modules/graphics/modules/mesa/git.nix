@@ -1,13 +1,8 @@
 {
   nixpkgs.overlays = [
     (final: super: {
-      # mesa-git e492a278 (26.3.0-devel) hard-requires meson dep "venus-protocol"
-      # when virtio is in -Dvulkan-drivers; nixpkgs neither packages it nor allows
-      # wrap downloads. Build without the virtio vulkan driver (unused on this host).
-      # The throw fires when a venus-named package lands in mesa's dependency lists,
-      # i.e. when this workaround is obsolete — then delete the vulkanDrivers override.
-      # Re-check this guard on each nixpkgs bump.
-      # rc.nix (26.2.0-rc3) is intentionally untouched: mesa 26.2 vendors it in-tree.
+      # mesa-git hard-requires the meson dep "venus-protocol" when virtio is in
+      # -Dvulkan-drivers, and nixpkgs has no such package. The throws below re-arm it.
       mesa =
         let
           base = super.mesa;

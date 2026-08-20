@@ -10,9 +10,8 @@ GIT_JSON="$SCRIPT_DIR/git.json"
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
-# Minimum number of new commits on mesa main before the git overlay is bumped.
-# Mesa main moves constantly; without a floor every commit would rebuild the
-# whole cache. Raise to rebuild less often, lower to track main more tightly.
+# Commits on mesa main before the git overlay is bumped. Without a floor every
+# commit would rebuild the whole cache.
 MIN_GIT_COMMITS="${MIN_GIT_COMMITS:-50}"
 
 NIXPKGS_MESA_PATH="pkgs/development/libraries/mesa"
@@ -93,13 +92,29 @@ write_pin() {
 update_rc() {
   info "Finding latest mesa RC tag..."
 
+  local tags
+  tags=$(git ls-remote --tags https://gitlab.freedesktop.org/mesa/mesa.git 2>/dev/null) \
+    || error "Failed to list mesa tags"
+
   local latest_rc
-  latest_rc=$(git ls-remote --tags https://gitlab.freedesktop.org/mesa/mesa.git 2>/dev/null \
-    | grep -oP 'refs/tags/mesa-\K[0-9]+\.[0-9]+\.[0-9]+-rc[0-9]+' \
+  latest_rc=$(echo "$tags" \
+    | grep -oP 'refs/tags/mesa-\K[0-9]+\.[0-9]+\.[0-9]+-rc[0-9]+$' \
     | sort -V | tail -1)
 
   [ -z "$latest_rc" ] && error "No RC tags found"
   info "  Latest RC: $latest_rc"
+
+  # A final release supersedes its own RCs. The $ anchors matter -- without them
+  # the "final" pattern also matches the release part of an -rcN tag.
+  local latest_final rc_base
+  latest_final=$(echo "$tags" \
+    | grep -oP 'refs/tags/mesa-\K[0-9]+\.[0-9]+\.[0-9]+$' \
+    | sort -V | tail -1)
+  rc_base="${latest_rc%%-rc*}"
+  if [ -n "$latest_final" ] \
+    && [ "$(printf '%s\n%s\n' "$rc_base" "$latest_final" | sort -V | head -1)" = "$rc_base" ]; then
+    info "  WARNING: RC $latest_rc superseded by final release $latest_final (mesa.rc falls back to nixpkgs mesa)"
+  fi
 
   local tag="mesa-$latest_rc"
   local current_rev
@@ -142,9 +157,8 @@ update_git() {
     return
   fi
 
-  # Commit-count floor: only bump once enough new commits have landed. Count is
-  # taken from GitLab's compare API (public, no auth). Fail open — if the count
-  # can't be determined (API error, current_rev gone, first-ever seed) we bump.
+  # Fail open: if the count cannot be determined (API error, current_rev gone,
+  # first-ever seed) we bump.
   if [ -n "$current_rev" ]; then
     local count
     count=$(curl -sf "$GITLAB_API/repository/compare?from=${current_rev}&to=${git_rev}&straight=true" 2>/dev/null \
@@ -170,10 +184,8 @@ update_git() {
   hash=$(compute_hash "$TMP_DIR/git.tar.gz")
   info "  Hash: $hash"
 
-  # VERSION becomes part of the Nix derivation name, so gate it to a safe
-  # charset and match the archive prefix by wildcard instead of assuming
-  # GitLab's `mesa-<rev>/` layout. Pipefail-safe: a missing, unreadable, or
-  # name-unsafe VERSION falls through to the bare short rev warning below.
+  # VERSION lands in the derivation name, so gate it to a safe charset. Anything
+  # missing, unreadable or unsafe falls through to the short-rev warning below.
   local git_version version
   git_version=$(tar -xzOf "$TMP_DIR/git.tar.gz" --wildcards --no-wildcards-match-slash '*/VERSION' 2>/dev/null | head -1 | tr -d '\r' || true)
   if [[ "$git_version" =~ ^[A-Za-z0-9._+-]+$ ]]; then
