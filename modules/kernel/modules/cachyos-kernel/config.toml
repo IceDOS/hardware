@@ -1,2 +1,3 @@
 [icedos.hardware.kernel.cachyos]
 applyWithoutSubstituter = false
+branch = "release"
