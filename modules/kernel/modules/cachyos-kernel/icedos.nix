@@ -76,16 +76,18 @@
             the substituter bootstrap and apply the kernel from source next rebuild.
           '';
 
-          boot.kernelPackages =
+          boot.kernelPackages = mkForce (
             if shouldApplyCachyosKernel then
-              mkForce cachyosKernels."linuxPackages-cachyos-${variant}"
+              cachyosKernels."linuxPackages-cachyos-${variant}"
             else
-              linuxPackages;
+              linuxPackages
+          );
 
           boot.zfs.package = mkIf (shouldApplyCachyosKernel && zfs) zfs_cachyos;
           nixpkgs.overlays = [ default ];
           nix.settings.substituters = [ substituter ];
-          nix.settings.trusted-public-keys = mkIf shouldApplyCachyosKernel [
+
+          nix.settings.trusted-public-keys = [
             "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
           ];
         }
