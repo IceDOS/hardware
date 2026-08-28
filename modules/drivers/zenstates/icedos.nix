@@ -31,10 +31,8 @@
           inherit (lib) concatStringsSep map;
           inherit (config.icedos.hardware.drivers.zenstates) serviceArgs;
 
-          # Escape each argument for use in a single ExecStart= line, using the
-          # exact algorithm nixpkgs' systemd module applies (toJSON escapes
-          # quotes, backslashes and control characters; % and $ are doubled so
-          # systemd does not expand specifiers or variables).
+          # Escape each arg for ExecStart= (matches nixpkgs systemd module:
+          # toJSON + doubled % and $ to prevent systemd expansion).
           escapeExecArg = arg: builtins.replaceStrings [ "%" "$" ] [ "%%" "$$" ] (builtins.toJSON arg);
         in
         {

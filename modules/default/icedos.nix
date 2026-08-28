@@ -31,7 +31,7 @@
         {
           hardware.enableAllFirmware = true;
           networking.firewall.enable = config.icedos.hardware.network.firewall;
-          services.fstrim.enable = true; # Enable SSD TRIM
+          services.fstrim.enable = true;
           systemd.services.NetworkManager-wait-online.enable = false;
         }
       )

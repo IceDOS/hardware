@@ -124,11 +124,8 @@
             networking.hostId = mkIf (hostId != "") hostId;
             services.zfs.autoScrub.enable = autoScrub;
 
-            # zpool import scans /dev/disk/by-id before udev finishes creating symlinks,
-            # causing hangs on half-initialized devices. Run udevadm settle before import
-            # to ensure device symlinks exist. (systemd-udev-settle.service was removed
-            # in systemd 256, so we call udevadm settle directly via ExecStartPre.)
-            # See: https://github.com/NixOS/nixpkgs/issues/73095
+            # Wait for udev symlinks before zpool import (avoids half-initialized
+            # device hangs). systemd-udev-settle removed in systemd 256. nixpkgs#73095
             systemd.services = listToAttrs (
               map (pool: {
                 name = "zfs-import-${pool}";

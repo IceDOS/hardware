@@ -133,9 +133,8 @@
 
           boolYN = b: if b then "yes" else "no";
 
-          # INI atoms may be bool/int/float/null; formats.ini renders those without
-          # newlines. List values are spliced element-by-element into the value, so
-          # recurse into them — their string elements are emitted verbatim.
+          # Recurse into lists to emit string elements verbatim (INI renders
+          # bool/int/float/null atoms inline without newlines).
           hasNewline =
             v:
             if builtins.isList v then

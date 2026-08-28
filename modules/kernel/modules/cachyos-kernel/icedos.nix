@@ -44,16 +44,8 @@
           inherit (nix-cachyos-kernel.overlays) default;
           inherit (pkgs) cachyosKernels linuxPackages;
 
-          # The cachyos kernel builds are pulled from a third-party binary cache
-          # (attic.xuyh0120.win, operator xuyh0120). The substituter is always
-          # offered (that is the bootstrap step — /etc/icedos/substituters records
-          # it, which next generation's shouldApplyCachyosKernel sees). Only once
-          # the module actually applies the cachyos kernel does it add that store's
-          # signature key to nix.settings.trusted-public-keys for the WHOLE system,
-          # so every path that cache serves is trusted to have been built faithfully.
-          # The nix-cachyos-kernel input is flake-lock-pinned to a specific rev.
-          # applyWithoutSubstituter forces the cachyos kernel even when the cache is
-          # not already configured; when the cache is configured nix may prefer it.
+          # Third-party cache (attic.xuyh0120.win). Bootstrapped via
+          # /etc/icedos/substituters; trusted key added when kernel applies.
           substituter = "https://attic.xuyh0120.win/lantian";
 
           shouldApplyCachyosKernel =

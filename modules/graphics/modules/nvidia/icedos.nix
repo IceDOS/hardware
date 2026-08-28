@@ -46,7 +46,7 @@
           nvidia_x11 = config.boot.kernelPackages.nvidia_x11.bin;
         in
         {
-          services.xserver.videoDrivers = [ "nvidia" ]; # Install the nvidia drivers
+          services.xserver.videoDrivers = [ "nvidia" ];
 
           hardware.nvidia = {
             modesetting.enable = true;
@@ -65,7 +65,6 @@
             };
           };
 
-          # Enable nvidia gpu acceleration for containers
           hardware.nvidia-container-toolkit.enable =
             config.virtualisation.docker.enable || config.virtualisation.podman.enable;
 
@@ -87,7 +86,6 @@
 
           nixpkgs.config.cudaSupport = nvidia.cuda;
 
-          # Set nvidia gpu power limit
           systemd.services.nv-power-limit = mkIf power-limit.enable {
             enable = true;
             description = "Nvidia power limit control";

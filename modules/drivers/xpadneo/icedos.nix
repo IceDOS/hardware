@@ -10,9 +10,8 @@
         {
           hardware.xpadneo.enable = true;
 
-          # ERTM must be disabled for Xbox One controllers (BR/EDR).
-          # The upstream NixOS xpadneo module only disables it for kernels < 5.12,
-          # but Xbox One controllers still need it disabled on modern kernels.
+          # ERTM must be disabled for Xbox One controllers on modern kernels too
+          # (upstream NixOS module only disables it for kernels < 5.12).
           boot.extraModprobeConfig = ''
             options bluetooth disable_ertm=1
           ''

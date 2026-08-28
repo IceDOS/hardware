@@ -143,7 +143,6 @@
             pulseaudio.enable = false;
           };
 
-          # Enable service which hands out realtime scheduling priority to user processes on demand
           security.rtkit.enable = true;
 
           environment.systemPackages = with pkgs; [ pwvucontrol ];

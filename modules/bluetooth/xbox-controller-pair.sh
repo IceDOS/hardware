@@ -1,21 +1,5 @@
-# bt-pair — pair a flaky Bluetooth controller that BlueZ/KDE gives up on.
-#
-# Some controllers (notably Xbox One S pads on MediaTek adapters) fail the first
-# 1-2 BlueZ pairing attempts and need a clean re-pair. KDE's pairing wizard is
-# one-shot and bails on the first failure. This wipes any stale bond, retries
-# pairing, trusts, then brute-forces the link until an input device appears.
-#
-# The link brute-force exists because old-firmware Xbox pads intermittently send a
-# corrupted HID report descriptor ("unbalanced collection ... parse failed"), so
-# BlueZ reports "connected" but no js node is created. A fresh link sometimes
-# transfers the descriptor cleanly, so we reconnect until an input node shows up.
-#
-# Usage: bt-pair [MAC]      (no MAC -> pick from a list of known/nearby devices)
-#   BT_PAIR_RETRIES=N        pairing attempts             (default 5)
-#   BT_PAIR_SCAN=N           per-attempt scan seconds     (default 8)
-#   BT_PAIR_CONN_RETRIES=N   link/reconnect attempts      (default 8)
-#
-# Shebang and `set -euo pipefail` are injected by writeShellApplication.
+# bt-pair — re-pair flaky Xbox controllers. Wipes stale bonds, retries pairing.
+# Usage: bt-pair [MAC] | env: BT_PAIR_RETRIES=5 BT_PAIR_SCAN=8 BT_PAIR_CONN_RETRIES=8
 
 retries="${BT_PAIR_RETRIES:-5}"
 scan_secs="${BT_PAIR_SCAN:-8}"
@@ -31,9 +15,7 @@ mac="${1:-}"
 
 is_mac() { [[ "$1" =~ ^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$ ]]; }
 
-# True if an input device bound to $mac_lc exposes a joystick handler. This is
-# ground truth for "usable as a controller": a failed HID descriptor parse
-# creates no such node, a clean one does.
+# True if $mac_lc exposes a joystick handler (clean HID descriptor = input node).
 has_input_node() {
   local uniq="" line
   while IFS= read -r line; do
