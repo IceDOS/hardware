@@ -1,38 +1,47 @@
 {
   cmake,
   fetchFromGitHub,
+  jq,
+  libGL,
+  libX11,
+  libffi,
+  libxext,
+  libxfixes,
+  libxkbcommon,
   pkg-config,
   stdenv,
+  vulkan-headers,
   wayland,
   wayland-scanner,
-  libX11,
-  vulkan-headers,
-  libffi,
-  jq,
 }:
 
 let
+  # Refreshed by ./update.sh: bumps rev only on overlay-path changes and derives
+  # vkroots lockstep with that rev's dxvk-nvapi submodule.
+  source = builtins.fromJSON (builtins.readFile ./source.json);
+
+  # GE builds against the vkroots its dxvk-nvapi submodule vendors; updater pins it.
   vkroots = fetchFromGitHub {
     owner = "misyltoad";
     repo = "vkroots";
-    rev = "ee76e620798612c52fb8dcc32a1058a0a3538930";
-    hash = "sha256-E+8Uz3ViMMPZ1sLLz7YXbdDgDo9jCD+KR9x8TEpbECA=";
-  };
-
-  proton-src = fetchFromGitHub {
-    owner = "GloriousEggroll";
-    repo = "proton-ge-custom";
-    rev = "15e28c57d0b32fbfe67d0e08885383d0a055a972";
-    hash = "sha256-hC6IyOSBN8y/u15ORRz/R0+FhHnXniO5SeW7SsvSdtM=";
-    sparseCheckout = [ "vklayers/steam-overlay-wayland" ];
+    rev = source.vkrootsRev;
+    hash = source.vkrootsHash;
   };
 in
-stdenv.mkDerivation {
+stdenv.mkDerivation (rec {
   pname = "steam-overlay-wayland";
-  version = "1.0.0";
+  inherit (source) version;
 
-  src = proton-src;
-  sourceRoot = "source/vklayers/steam-overlay-wayland";
+  # Also yields lsteamclient_overlay_bridge, the runtime lib the layer links (add_subdirectory'd in).
+  src = fetchFromGitHub {
+    owner = "GloriousEggroll";
+    repo = "proton-ge-custom";
+    inherit (source) rev hash;
+    # Same list the updater diffs against, so the two cannot drift.
+    sparseCheckout = source.overlayPaths;
+  };
+  # The other overlay-path references below derive from the same list.
+  sourceRoot = "source/${builtins.elemAt source.overlayPaths 0}";
 
   nativeBuildInputs = [
     cmake
@@ -42,25 +51,44 @@ stdenv.mkDerivation {
   ];
 
   buildInputs = [
-    wayland
+    libGL
     libX11
-    vulkan-headers
     libffi
+    libxext
+    libxfixes
+    libxkbcommon
+    vulkan-headers
+    wayland
   ];
 
   cmakeFlags = [
     "-DCMAKE_BUILD_TYPE=release"
     "-DVKROOTS_INCLUDE_DIR=${vkroots}"
     "-DVULKAN_HEADERS_INCLUDE_DIR=${vulkan-headers}/include"
+    "-DLSTEAMCLIENT_OVERLAY_BRIDGE_SOURCE_DIR=${src}/${builtins.elemAt source.overlayPaths 1}"
   ];
 
   postInstall = ''
     JSON=$out/share/vulkan/implicit_layer.d/VkLayer_GE_wayland_steam_overlay.json
 
-    # Only absolutise library_path: the loader requires disable_environment on
-    # implicit layers and silently skips the layer without it.
+    # Loader skips implicit layers without disable_environment; layer and bridge sit
+    # side-by-side in $out/lib, resolved via $ORIGIN.
     jq --arg out "${placeholder "out"}" '
       .layer.library_path = ($out + "/lib/libVkLayer_GE_Wayland_SteamOverlay.so")
     ' "$JSON" > "$JSON.tmp" && mv "$JSON.tmp" "$JSON"
   '';
-}
+
+  # An unresolved bridge makes the loader silently drop the overlay; fail here
+  # rather than ship a dead layer (the updater pushes unattended).
+  doInstallCheck = true; # installCheckPhase must actually run
+  installCheckPhase = ''
+    # Take the soname from the layer's NEEDED entry so a soversion bump updates the check.
+    needed=$(readelf -d "$out/lib/libVkLayer_GE_Wayland_SteamOverlay.so" \
+      | sed -n 's/.*NEEDED.*\(liblsteamclient_overlay_bridge[^]]*\).*/\1/p' | head -1)
+    test -n "$needed"
+    test -f "$out/lib/$needed"
+    # Capture first so a missing/broken ldd aborts via set -e; $ORIGIN resolves the bridge.
+    ldd_out=$(ldd "$out/lib/libVkLayer_GE_Wayland_SteamOverlay.so")
+    ! grep -q 'not found' <<<"$ldd_out"
+  '';
+})
