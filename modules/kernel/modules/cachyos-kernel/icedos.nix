@@ -1,18 +1,32 @@
-{ lib, icedosLib, ... }:
-
 {
-  options.icedos.hardware.kernel.cachyos.applyWithoutSubstituter =
+  config,
+  lib,
+  icedosLib,
+  ...
+}:
+
+let
+  cfg = config.hardware.kernel.cachyos or { };
+
+  inherit (lib) importTOML;
+  defaults = (importTOML ./config.toml).icedos.hardware.kernel.cachyos;
+
+  inherit (defaults)
+    applyWithoutSubstituter
+    branch
+    ;
+in
+{
+  options.icedos.hardware.kernel.cachyos =
     let
-      inherit (icedosLib) mkBoolOption;
-      inherit (lib) importTOML;
-
-      inherit ((importTOML ./config.toml).icedos.hardware.kernel.cachyos)
-        applyWithoutSubstituter
-        ;
+      inherit (icedosLib) mkBoolOption mkStrOption;
     in
-    mkBoolOption { default = applyWithoutSubstituter; };
+    {
+      applyWithoutSubstituter = mkBoolOption { default = applyWithoutSubstituter; };
+      branch = mkStrOption { default = branch; };
+    };
 
-  inputs.nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
+  inputs.nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/${cfg.branch or branch}";
 
   outputs.nixosModules =
     { inputs, ... }:
