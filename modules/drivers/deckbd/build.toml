@@ -1,0 +1,7 @@
+[[icedos.repositories]]
+url = "github:icedos/hardware"
+fetchDependencies = false
+modules = ["deckbd"]
+
+[icedos.system]
+version = "26.05"

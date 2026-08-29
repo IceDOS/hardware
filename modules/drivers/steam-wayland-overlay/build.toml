@@ -1,0 +1,7 @@
+[[icedos.repositories]]
+url = "github:icedos/hardware"
+fetchDependencies = false
+modules = ["steam-wayland-overlay"]
+
+[icedos.system]
+version = "26.05"
