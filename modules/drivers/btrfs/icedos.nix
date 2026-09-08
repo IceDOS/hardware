@@ -33,6 +33,10 @@
                 completion.files = true;
               }
             ];
+
+            icedos.system.tips.list = [
+              "icedos btrfs-zstd <folder> compresses files on a btrfs drive to free up space."
+            ];
           }
         )
       ];

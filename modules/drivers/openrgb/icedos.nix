@@ -87,6 +87,10 @@
               ''}";
             };
           };
+
+          icedos.system.tips.list = [
+            "Pick your RGB lighting colour with [icedos.hardware.drivers.openrgb] color, or leave it empty to match your desktop accent."
+          ];
         }
       )
     ];

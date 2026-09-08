@@ -45,29 +45,15 @@
         }:
 
         let
-          inherit (builtins) any readFile;
+          inherit (builtins) any;
           inherit (lib) hasAttr optionals;
-          inherit (pkgs) blueman writeShellApplication;
+          inherit (pkgs) blueman;
           inherit (config.icedos) desktop hardware;
           inherit (hardware) bluetooth devices;
-
-          bt-pair = writeShellApplication {
-            name = "xbox-controller-pair";
-
-            runtimeInputs = with pkgs; [
-              bluez
-              coreutils
-              gnugrep
-            ];
-
-            text = readFile ./xbox-controller-pair.sh;
-          };
         in
         {
-          environment.systemPackages = [
-            bt-pair
-          ]
-          ++ optionals (any (name: hasAttr name desktop) [ "hyprland" ]) [ blueman ];
+          environment.systemPackages =
+            [ ] ++ optionals (any (name: hasAttr name desktop) [ "hyprland" ]) [ blueman ];
 
           hardware.bluetooth = {
             enable = true;

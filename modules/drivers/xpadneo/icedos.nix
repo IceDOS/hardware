@@ -16,6 +16,10 @@
             options bluetooth disable_ertm=1
           ''
           + (if (!config.icedos.hardware.devices.laptop) then "options btusb enable_autosuspend=0" else "");
+
+          icedos.system.tips.list = [
+            "Xbox controllers pair over Bluetooth with rumble and battery level working."
+          ];
         }
       )
     ];

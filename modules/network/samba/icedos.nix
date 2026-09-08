@@ -108,6 +108,7 @@
             concatStringsSep
             listToAttrs
             mkIf
+            optionals
             optionalAttrs
             ;
 
@@ -244,6 +245,10 @@
 
             enable = true;
           };
+
+          icedos.system.tips.list = optionals (shares == [ ]) [
+            "Share folders with network devices by listing them in shares.toml."
+          ];
         }
       )
     ];

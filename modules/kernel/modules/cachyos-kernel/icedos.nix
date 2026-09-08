@@ -96,6 +96,10 @@ in
           nix.settings.trusted-public-keys = [
             "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
           ];
+
+          icedos.system.tips.list =
+            optional (!shouldApplyCachyosKernel)
+              "The CachyOS kernel needs two rebuilds: the first sets up its download server, the second installs it.";
         }
       )
     ];

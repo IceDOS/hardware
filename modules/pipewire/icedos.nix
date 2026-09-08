@@ -61,7 +61,7 @@
         }:
 
         let
-          inherit (lib) mkIf optional;
+          inherit (lib) mkIf optional optionals;
           inherit (config.icedos.hardware.pipewire) echo-cancellation noise-cancellation;
 
           inherit (noise-cancellation)
@@ -239,6 +239,13 @@
               ]
             '';
           };
+
+          icedos.system.tips.list = [
+            "icedos pipewire toggle-mute-all mutes every microphone and speaker at once."
+          ]
+          ++ optionals (!noise-cancellation.enable) [
+            "[icedos.hardware.pipewire.noise-cancellation] enable = true strips background noise from your microphone."
+          ];
         }
       )
     ];

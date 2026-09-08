@@ -29,7 +29,7 @@
         }:
 
         let
-          inherit (lib) mkIf;
+          inherit (lib) mkIf optionals;
           inherit (config.icedos.hardware.graphics.mesa) rc git;
         in
         {
@@ -43,6 +43,11 @@
           nixpkgs.overlays = lib.mkMerge [
             (mkIf rc (import ./rc.nix).nixpkgs.overlays)
             (mkIf git (import ./git.nix).nixpkgs.overlays)
+          ];
+
+          icedos.system.tips.list = optionals (!rc && !git) [
+            "[icedos.hardware.graphics.mesa] rc = true tries the next graphics driver shortly before its release."
+            "[icedos.hardware.graphics.mesa] git = true runs the newest in-development graphics driver, bugs included."
           ];
         }
       )

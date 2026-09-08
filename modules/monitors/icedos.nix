@@ -218,6 +218,14 @@
               };
             }
           ];
+
+          icedos.system.tips.list =
+            optionals noMonitors [
+              "List your screens under [[icedos.hardware.monitors]] to set resolution, refresh rate and position."
+            ]
+            ++ optionals (!noMonitors && ocMonitors == [ ]) [
+              "Setting overclock = true on a screen tries a higher refresh rate than it advertises."
+            ];
         }
       )
     ];

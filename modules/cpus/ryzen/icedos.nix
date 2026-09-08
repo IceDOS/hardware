@@ -17,6 +17,10 @@
         };
 
         hardware.cpu.amd.updateMicrocode = true;
+
+        icedos.system.tips.list = [
+          "Your AMD CPU picks its own speed with amd-pstate, saving power when idle."
+        ];
       }
     ];
 

@@ -38,7 +38,7 @@
         }:
 
         let
-          inherit (lib) mkIf;
+          inherit (lib) mkIf optionals;
           inherit (config.icedos) hardware;
           inherit (hardware) graphics;
           inherit (graphics) nvidia;
@@ -105,6 +105,14 @@
 
             wantedBy = [ "multi-user.target" ];
           };
+
+          icedos.system.tips.list =
+            optionals (!nvidia.beta) [
+              "[icedos.hardware.graphics.nvidia] beta = true installs the newest NVIDIA driver."
+            ]
+            ++ optionals hardware.devices.laptop [
+              "icedos force-nvidia <app> runs one app on the NVIDIA card instead of the built-in one."
+            ];
         }
       )
     ];

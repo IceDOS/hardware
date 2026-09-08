@@ -46,6 +46,10 @@
           );
 
           swapDevices = map (device: { inherit device; }) swapDevices;
+
+          icedos.system.tips.list = [
+            "Add your other drives under [[icedos.hardware.mounts]] so they mount at every boot."
+          ];
         }
       )
     ];

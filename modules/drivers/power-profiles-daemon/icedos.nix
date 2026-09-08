@@ -56,6 +56,10 @@
               };
             }
           ];
+
+          icedos.system.tips.list = [
+            "Choose longer battery or more speed with [icedos.hardware.drivers.power-profiles-daemon] profile."
+          ];
         }
       )
     ];

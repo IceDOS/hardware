@@ -19,6 +19,10 @@
 
         {
           networking.hostName = config.icedos.hardware.network.hostname;
+
+          icedos.system.tips.list = [
+            "The name other devices see comes from [icedos.hardware.network] hostname."
+          ];
         }
       )
     ];

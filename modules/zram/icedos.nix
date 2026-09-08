@@ -18,6 +18,10 @@
             enable = true;
             memoryPercent = config.icedos.hardware.zram.percentage;
           };
+
+          icedos.system.tips.list = [
+            "zram compresses memory instead of swapping to disk; size it with [icedos.hardware.zram] percentage."
+          ];
         }
       )
     ];

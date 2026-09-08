@@ -32,6 +32,10 @@
             scheduler = "scx_${scheduler}";
             inherit extraArgs;
           };
+
+          icedos.system.tips.list = [
+            "[icedos.hardware.kernel.scx] scheduler changes how apps share the CPU; lavd suits gaming."
+          ];
         }
       )
     ];

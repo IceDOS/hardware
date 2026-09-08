@@ -39,6 +39,10 @@
               allowedUDPPorts = [ 9 ];
             };
           };
+
+          icedos.system.tips.list = [
+            "Turn this machine on from another device with wakeonlan <mac address>."
+          ];
         }
       )
     ];

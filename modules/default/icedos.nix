@@ -27,12 +27,24 @@
     { ... }:
     [
       (
-        { config, ... }:
+        { config, lib, ... }:
+
+        let
+          inherit (lib) optionals;
+          inherit (config.icedos.hardware.network) firewall;
+        in
         {
           hardware.enableAllFirmware = true;
-          networking.firewall.enable = config.icedos.hardware.network.firewall;
+          networking.firewall.enable = firewall;
           services.fstrim.enable = true;
           systemd.services.NetworkManager-wait-online.enable = false;
+
+          icedos.system.tips.list = [
+            "Your SSD is trimmed on a timer, so it keeps its speed over the years."
+          ]
+          ++ optionals firewall [
+            "Set [icedos.hardware.network] firewall = false in config.toml if it blocks something you need."
+          ];
         }
       )
     ];

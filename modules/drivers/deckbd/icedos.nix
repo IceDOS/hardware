@@ -53,6 +53,10 @@
               deckbd = final.callPackage ./package.nix { };
             })
           ];
+
+          icedos.system.tips.list = [
+            "Your Steam Deck buttons work at the boot screen, so you can unlock the disk without a keyboard."
+          ];
         }
       )
     ];

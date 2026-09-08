@@ -21,7 +21,7 @@
         }:
 
         let
-          inherit (lib) mkIf;
+          inherit (lib) mkIf optionals;
           inherit (config) icedos;
           inherit (icedos) hardware system;
           inherit (system) isFirstBuild;
@@ -40,6 +40,10 @@
                 patches = (old.patches or [ ]) ++ [ ./patch.diff ];
               });
             })
+          ];
+
+          icedos.system.tips.list = optionals (!lcdOverclock) [
+            "Steam Deck LCD screens can run faster with [icedos.hardware.devices.steamdeck] lcdOverclock = true."
           ];
         }
       )

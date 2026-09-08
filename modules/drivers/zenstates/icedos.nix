@@ -28,7 +28,7 @@
         }:
 
         let
-          inherit (lib) concatStringsSep map;
+          inherit (lib) concatStringsSep map optionals;
           inherit (config.icedos.hardware.drivers.zenstates) serviceArgs;
 
           # Escape each arg for ExecStart= (matches nixpkgs systemd module:
@@ -61,6 +61,10 @@
 
             wantedBy = [ "multi-user.target" ];
           };
+
+          icedos.system.tips.list = optionals (serviceArgs == [ ]) [
+            "Undervolt your Ryzen CPU with [icedos.hardware.drivers.zenstates] serviceArgs for lower temperatures."
+          ];
         }
       )
     ];

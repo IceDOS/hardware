@@ -86,6 +86,7 @@
               filter
               listToAttrs
               mkIf
+              optionals
               splitString
               unique
               ;
@@ -132,6 +133,14 @@
                 value.serviceConfig.ExecStartPre = [ "${config.systemd.package}/bin/udevadm settle" ];
               }) zfsPools
             );
+
+            icedos.system.tips.list =
+              optionals autoScrub [
+                "ZFS checks your files for damage once a month on its own."
+              ]
+              ++ optionals (hostId == "") [
+                "Set [icedos.hardware.drivers.zfs] hostId to the id your pools already use, or they will not mount."
+              ];
           }
         )
       ];

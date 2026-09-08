@@ -25,7 +25,7 @@
 
         let
           inherit (config.icedos.hardware.graphics.radeon) featureMask rocm;
-          inherit (lib) mkIf;
+          inherit (lib) mkIf optionals;
         in
         {
           boot = {
@@ -34,6 +34,10 @@
           };
 
           nixpkgs.config.rocmSupport = rocm;
+
+          icedos.system.tips.list = optionals (!rocm) [
+            "[icedos.hardware.graphics.radeon] rocm = true adds AMD support for AI and compute apps."
+          ];
         }
       )
     ];

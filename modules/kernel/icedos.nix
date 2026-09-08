@@ -48,6 +48,10 @@
 
             kernelPackages = mkIf (hasAttr kernelVariant pkgs) pkgs.${kernelVariant};
           };
+
+          icedos.system.tips.list = [
+            "Pick another kernel with [icedos.hardware.kernel] variant in config.toml."
+          ];
         }
       )
     ];

@@ -19,6 +19,10 @@
 
         {
           networking.extraHosts = config.icedos.hardware.network.hosts;
+
+          icedos.system.tips.list = [
+            "Block or redirect websites by adding lines to [icedos.hardware.network] hosts."
+          ];
         }
       )
     ];
