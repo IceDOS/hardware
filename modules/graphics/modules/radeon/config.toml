@@ -1,3 +1,6 @@
 [icedos.hardware.graphics.radeon]
 rocm = false
 featureMask = "" # e.g. "0xffffffff" (for clock/voltage control)
+
+# amdgpu job timeouts in ms as "GFX,Compute,SDMA,Video"; empty keeps the kernel default.
+lockupTimeout = "" # e.g. "2000,60000,2000,2000"
