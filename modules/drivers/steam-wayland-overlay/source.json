@@ -1,7 +1,7 @@
 {
-  "version": "unstable-2026-09-08",
-  "rev": "6d7e29a8189b2b96ceb55b900b0da5c07967b3ae",
-  "hash": "sha256-Oig/quz/a4e90FZ9IdOx4LKDt0RH3xHPdJFCzUIQUG4=",
+  "version": "unstable-2026-09-21",
+  "rev": "70ec3c9783e8990441dbb569d6f72262da42eb18",
+  "hash": "sha256-HMa+X0fYwrHT9/U6L8r0MBM+dsazsN8Sp5xeC7f/6LM=",
   "vkrootsRev": "ee76e620798612c52fb8dcc32a1058a0a3538930",
   "vkrootsHash": "sha256-E+8Uz3ViMMPZ1sLLz7YXbdDgDo9jCD+KR9x8TEpbECA=",
   "overlayPaths": [
