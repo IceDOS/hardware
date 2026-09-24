@@ -14,15 +14,17 @@ jobs:
   update:
     uses: ./.github/workflows/module-update.yml
     with:
-      module: mesa
+      module: mesa-git
       paths: modules/graphics/modules/mesa
       command: nix-shell modules/graphics/modules/mesa/update.sh
-      # Title reflects whichever overlay pins actually changed; patches-only syncs.
+      # Title: old rev -> new rev from git.json; rc/patches-only syncs get a short suffix.
       title-command: |
         cd modules/graphics/modules/mesa
+        old=$(git show 'HEAD:modules/graphics/modules/mesa/git.json' 2>/dev/null | jq -r '.rev // ""' | cut -c1-12)
+        new=$(jq -r '.rev // ""' git.json 2>/dev/null | cut -c1-12)
         body=""
         append() { if [ -n "$body" ]; then body+=", "; fi; body+="$1"; }
-        if ! git diff --quiet git.json; then append "git -> $(jq -r '.rev' git.json | cut -c1-12)"; fi
+        if ! git diff --quiet git.json; then append "${old:+$old -> }$new"; fi
         if ! git diff --quiet rc.json; then append "rc -> $(jq -r '.version' rc.json)"; fi
         [ -n "$body" ] && echo "$body" || echo "sync patches"
     secrets: inherit
