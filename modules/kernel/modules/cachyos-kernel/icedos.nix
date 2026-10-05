@@ -55,7 +55,7 @@ in
             optional
             ;
 
-          inherit (nix-cachyos-kernel.overlays) default;
+          inherit (nix-cachyos-kernel.overlays) pinned;
           inherit (pkgs) cachyosKernels linuxPackages;
 
           # Third-party cache (attic.xuyh0120.win). Bootstrapped via
@@ -90,7 +90,7 @@ in
           );
 
           boot.zfs.package = mkIf (shouldApplyCachyosKernel && zfs) zfs_cachyos;
-          nixpkgs.overlays = [ default ];
+          nixpkgs.overlays = [ pinned ];
           nix.settings.substituters = [ substituter ];
 
           nix.settings.trusted-public-keys = [
