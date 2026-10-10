@@ -25,6 +25,11 @@
         else
           (base.override {
             vulkanDrivers = builtins.filter (d: d != "virtio") drivers;
+            # mesa main deleted the anti-lag layer (MR 42048); nixpkgs still requests it.
+            vulkanLayers = builtins.filter (l: l != "anti-lag") (
+              base.vulkanLayers
+                or (throw "mesa-git: nixpkgs' mesa no longer exposes passthru.vulkanLayers — update the vulkanLayers workaround in git.nix")
+            );
           }).overrideAttrs
             (
               old:
