@@ -1,0 +1,14 @@
+diff --git a/src/panfrost/vulkan/panvk_physical_device.c b/src/panfrost/vulkan/panvk_physical_device.c
+--- a/src/panfrost/vulkan/panvk_physical_device.c
++++ b/src/panfrost/vulkan/panvk_physical_device.c
+@@ -94,8 +94,8 @@
+       mesa_logi("Found compatible device '%s'.", path);
+    } else if (!device->kmod.dev) {
+       close(fd);
+-      return panvk_errorf(instance, VK_ERROR_OUT_OF_HOST_MEMORY,
+-                          "cannot create device");
++      return panvk_errorf(instance, VK_ERROR_INCOMPATIBLE_DRIVER,
++                          "no compatible kmod backend");
+    }
+ 
+    return VK_SUCCESS;
