@@ -15,4 +15,4 @@ openFirewall = false
 enableWsdd = false
 enableNmbd = true
 
-[icedos.hardware.network.samba.extraGlobalSettings]
+[icedos.hardware.network.samba.extra-global-settings]

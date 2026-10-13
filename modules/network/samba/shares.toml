@@ -12,4 +12,4 @@ writeList = []
 createMask = "0644"
 directoryMask = "0755"
 
-[icedos.hardware.network.samba.shares.extraSettings]
+[icedos.hardware.network.samba.shares.extra-settings]

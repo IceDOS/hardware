@@ -55,7 +55,7 @@
       openFirewall = mkBoolOption { default = openFirewall; };
       enableWsdd = mkBoolOption { default = enableWsdd; };
       enableNmbd = mkBoolOption { default = enableNmbd; };
-      extraGlobalSettings = mkAttrsOption { default = { }; };
+      extra-global-settings = mkAttrsOption { default = { }; };
 
       shares =
         let
@@ -72,7 +72,7 @@
             writeList
             createMask
             directoryMask
-            extraSettings
+            extra-settings
             ;
         in
         mkSubmoduleListOption { default = [ ]; } {
@@ -88,7 +88,7 @@
           writeList = mkStrListOption { default = writeList; };
           createMask = mkStrOption { default = createMask; };
           directoryMask = mkStrOption { default = directoryMask; };
-          extraSettings = mkAttrsOption { default = extraSettings; };
+          extra-settings = mkAttrsOption { default = extra-settings; };
         };
     };
 
@@ -117,7 +117,7 @@
             aioWriteSize
             enableNmbd
             enableWsdd
-            extraGlobalSettings
+            extra-global-settings
             guestAccount
             logFile
             mapToGuest
@@ -162,7 +162,7 @@
             // optionalAttrs (share.writeList != [ ]) {
               "write list" = concatStringsSep " " share.writeList;
             }
-            // share.extraSettings;
+            // share.extra-settings;
           };
 
           shareSettings = listToAttrs (map mkShare shares);
@@ -181,7 +181,7 @@
             "log file" = logFile;
             "max log size" = toString maxLogSize;
           }
-          // extraGlobalSettings;
+          // extra-global-settings;
         in
         {
           assertions = concatLists [
@@ -209,21 +209,21 @@
             }) shares)
             (map (s: {
               assertion =
-                !(builtins.any (k: hasNewline k || hasNewline s.extraSettings.${k}) (
-                  builtins.attrNames s.extraSettings
+                !(builtins.any (k: hasNewline k || hasNewline s.extra-settings.${k}) (
+                  builtins.attrNames s.extra-settings
                 ));
-              message = "icedos.hardware.network.samba.shares: share '${s.name}' has a key or value in extraSettings containing a newline, which would inject extra smb.conf directives.";
+              message = "icedos.hardware.network.samba.shares: share '${s.name}' has a key or value in extra-settings containing a newline, which would inject extra smb.conf directives.";
             }) shares)
             (
               let
-                flatKeys = builtins.attrNames extraGlobalSettings;
-                flatVals = builtins.attrValues extraGlobalSettings;
+                flatKeys = builtins.attrNames extra-global-settings;
+                flatVals = builtins.attrValues extra-global-settings;
               in
               [
                 {
                   assertion =
                     !(builtins.any (k: hasNewline k) flatKeys) && !(builtins.any (v: hasNewline v) flatVals);
-                  message = "icedos.hardware.network.samba.extraGlobalSettings: a key or value contains a newline, which would inject extra smb.conf directives.";
+                  message = "icedos.hardware.network.samba.extra-global-settings: a key or value contains a newline, which would inject extra smb.conf directives.";
                 }
               ]
             )
