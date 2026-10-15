@@ -3,9 +3,14 @@
 {
   options.icedos.hardware.graphics.mesa =
     let
-      inherit (icedosLib) mkBoolOption;
+      inherit (icedosLib) mkBoolOption mkStrOption;
       inherit (lib) importTOML;
-      inherit ((importTOML ./config.toml).icedos.hardware.graphics.mesa) rc git;
+
+      inherit ((importTOML ./config.toml).icedos.hardware.graphics.mesa)
+        rc
+        git
+        shaderCacheMaxSize
+        ;
     in
     {
       rc = mkBoolOption {
@@ -15,6 +20,11 @@
       git = mkBoolOption {
         default = git;
         description = "Build mesa from the git snapshot pinned in git.json. Until nixpkgs wires venus-protocol into mesa, the virtio (venus) Vulkan driver is disabled in this build — relevant if you need Vulkan in a virtio-gpu VM guest.";
+      };
+
+      shaderCacheMaxSize = mkStrOption {
+        default = shaderCacheMaxSize;
+        description = "Max size of the mesa shader cache per user, as a number with a K, M or G suffix. Mesa evicts the oldest entries past it.";
       };
     };
 
@@ -30,7 +40,7 @@
 
         let
           inherit (lib) mkIf optionals;
-          inherit (config.icedos.hardware.graphics.mesa) rc git;
+          inherit (config.icedos.hardware.graphics.mesa) rc git shaderCacheMaxSize;
         in
         {
           assertions = [
@@ -39,6 +49,8 @@
               message = "icedos.hardware.graphics.mesa: only one of `rc` and `git` can be enabled at a time.";
             }
           ];
+
+          environment.sessionVariables.MESA_SHADER_CACHE_MAX_SIZE = shaderCacheMaxSize;
 
           nixpkgs.overlays = lib.mkMerge [
             (mkIf rc (import ./rc.nix).nixpkgs.overlays)

@@ -1,3 +1,4 @@
 [icedos.hardware.graphics.mesa]
 rc = false
 git = false
+shaderCacheMaxSize = "16G"
