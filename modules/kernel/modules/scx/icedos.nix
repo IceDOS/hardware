@@ -23,7 +23,13 @@
 
         let
           inherit (config.icedos.hardware.kernel) scx;
-          inherit (scx) extraArgs scheduler;
+          inherit (scx) scheduler;
+
+          extraArgs =
+            if ((builtins.length scx.extraArgs) == 0) && scheduler == "lavd" then
+              [ "--autopower" ]
+            else
+              scx.extraArgs;
         in
         {
           services.scx = {
