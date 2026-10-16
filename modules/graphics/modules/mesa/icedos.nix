@@ -15,7 +15,7 @@
     {
       rc = mkBoolOption {
         default = rc;
-        description = "Build mesa from the release-candidate snapshot pinned in rc.json (vendors venus-protocol in-tree, so the virtio Vulkan driver is kept).";
+        description = "Build mesa from the release-candidate snapshot pinned in rc.json. Until nixpkgs wires venus-protocol into mesa, the virtio (venus) Vulkan driver is disabled in this build — relevant if you need Vulkan in a virtio-gpu VM guest.";
       };
       git = mkBoolOption {
         default = git;
