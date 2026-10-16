@@ -45,7 +45,7 @@ that's the **user's** call.
 - `kernel` (variant selection, e.g. `latest-lto-x86_64-v3`), `graphics/radeon` &
   `graphics/nvidia`, `pipewire` (echo/noise cancellation),
   `bluetooth`, `openrgb`, `zram`, `uinput`, `upower`, `monitors`, `mounts`, `network`.
-- `scx` (CPU scheduler), `lact` & `low-latency-vulkan-layer` (GPU), `power-profiles-daemon`,
+- `scx` (CPU scheduler), `lact` (GPU), `power-profiles-daemon`,
   `samba` (file shares), `solaar`, `input-remapper`, `ambiled` (peripherals/LED).
 - Hardware modules can change boot/kernel — be conservative; prefer `--build` validation
   and let the user activate.

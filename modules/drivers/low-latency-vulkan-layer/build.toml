@@ -1,7 +1,0 @@
-[[icedos.repositories]]
-url = "github:icedos/hardware"
-fetchDependencies = false
-modules = ["low-latency-vulkan-layer"]
-
-[icedos.system]
-version = "26.05"
