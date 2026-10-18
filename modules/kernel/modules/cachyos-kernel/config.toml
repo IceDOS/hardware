@@ -1,3 +1,7 @@
 [icedos.hardware.kernel.cachyos]
 applyWithoutSubstituter = false
 branch = "release"
+
+[icedos.hardware.kernel.cachyos.substituters]
+primary = true
+secondary = false
