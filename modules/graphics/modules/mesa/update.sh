@@ -81,11 +81,32 @@ compute_hash() {
   nix hash to-sri --type sha256 "$nar_hash" 2>/dev/null | grep -v '^warning:' || echo "$nar_hash"
 }
 
-# --- Write a {version, rev, hash} overlay pin ---
+# --- List the crates.io wraps of a source tarball as fetchCrate args ---
+# Each pin carries its own list: nixpkgs' wraps.json tracks the release, and
+# mesa main adds crates before nixpkgs does.
+extract_wraps() {
+  local tarball="$1" dir="$TMP_DIR/wraps"
+  rm -rf "$dir"
+  mkdir -p "$dir"
+  tar -xzf "$tarball" -C "$dir" --wildcards --no-wildcards-match-slash '*/subprojects/*.wrap'     || error "No subprojects/*.wrap in $tarball"
+
+  local f url hash
+  for f in "$dir"/*/subprojects/*.wrap; do
+    read -r url hash < <(awk -F' *= *' '
+      /^\[/ { sec = $0 }
+      sec == "[wrap-file]" && $1 == "source_url" { url = $2 }
+      sec == "[wrap-file]" && $1 == "source_hash" { hash = $2 }
+      END { print url, hash }' "$f")
+    [[ "$url" =~ crates\.io/(api/v1/)?crates/([^/]+)/([^/]+)/download ]] || continue
+    jq -n --arg pname "${BASH_REMATCH[2]}" --arg version "${BASH_REMATCH[3]}"       --arg hash "$(nix hash to-sri --type sha256 "$hash" 2>/dev/null | grep -v '^warning:')"       '{pname: $pname, version: $version, hash: $hash}'
+  done | jq -s 'sort_by(.pname)'
+}
+
+# --- Write a {version, rev, hash, wraps} overlay pin ---
 write_pin() {
-  local file="$1" version="$2" rev="$3" hash="$4"
-  jq -n --arg version "$version" --arg rev "$rev" --arg hash "$hash" \
-    '{version: $version, rev: $rev, hash: $hash}' > "$file"
+  local file="$1" version="$2" rev="$3" hash="$4" wraps="$5"
+  jq -n --arg version "$version" --arg rev "$rev" --arg hash "$hash" --argjson wraps "$wraps" \
+    '{version: $version, rev: $rev, hash: $hash, wraps: $wraps}' > "$file"
 }
 
 # --- Update RC overlay ---
@@ -134,7 +155,7 @@ update_rc() {
   local hash
   hash=$(compute_hash "$TMP_DIR/rc.tar.gz")
   info "  Hash: $hash"
-  write_pin "$RC_JSON" "$latest_rc" "$tag" "$hash"
+  write_pin "$RC_JSON" "$latest_rc" "$tag" "$hash" "$(extract_wraps "$TMP_DIR/rc.tar.gz")"
   info "  RC updated: $latest_rc"
 }
 
@@ -194,7 +215,7 @@ update_git() {
     version="${git_rev:0:7}"
     info "  WARNING: could not read a usable VERSION from source; using bare short rev $version"
   fi
-  write_pin "$GIT_JSON" "$version" "$git_rev" "$hash"
+  write_pin "$GIT_JSON" "$version" "$git_rev" "$hash" "$(extract_wraps "$TMP_DIR/git.tar.gz")"
   info "  Git updated: $version"
 }
 

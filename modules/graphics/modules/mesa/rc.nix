@@ -40,6 +40,12 @@
 
                 patches = map (f: patchDir + "/${f}") patchFiles;
 
+                env = (old.env or { }) // {
+                  MESON_PACKAGE_CACHE_DIR = import ./package-cache.nix {
+                    inherit (final) fetchCrate lib runCommand;
+                  } source.wraps;
+                };
+
                 postPatch = ''
                   patchShebangs .
                 '';
