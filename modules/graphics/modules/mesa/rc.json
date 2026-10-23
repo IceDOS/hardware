@@ -1,7 +1,7 @@
 {
-  "version": "26.2.0-rc3",
-  "rev": "mesa-26.2.0-rc3",
-  "hash": "sha256-lGqHOl4ZtHFA4pBiV66r19MsmhcWHKK/fNHGxhyx3o8=",
+  "version": "26.3.0-rc2",
+  "rev": "mesa-26.3.0-rc2",
+  "hash": "sha256-VhzgtDKPPDDG6NyHzSBO5ZqeZRrJDdzFgzZutfQ/XBQ=",
   "wraps": [
     {
       "pname": "bitflags",
@@ -42,6 +42,11 @@
       "pname": "log",
       "version": "0.4.27",
       "hash": "sha256-E9wt81HjICeDof4NRDdfcpX/tASSZ7DzAYNG3BIqHZQ="
+    },
+    {
+      "pname": "mach2",
+      "version": "0.7.0",
+      "hash": "sha256-sNKOKT8rjJ0rLRwBk708HL3A0s85aIjcARYvfPnWw/M="
     },
     {
       "pname": "once_cell",
