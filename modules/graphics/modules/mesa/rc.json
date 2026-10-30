@@ -1,7 +1,7 @@
 {
-  "version": "26.3.0-rc2",
-  "rev": "mesa-26.3.0-rc2",
-  "hash": "sha256-VhzgtDKPPDDG6NyHzSBO5ZqeZRrJDdzFgzZutfQ/XBQ=",
+  "version": "26.3.0-rc3",
+  "rev": "mesa-26.3.0-rc3",
+  "hash": "sha256-8rlk0Zrv3xrbn0jCjPg1AWtw+nNIfFOcM0428u8lZfI=",
   "wraps": [
     {
       "pname": "bitflags",
