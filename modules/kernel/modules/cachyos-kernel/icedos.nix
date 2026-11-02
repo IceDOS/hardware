@@ -74,8 +74,8 @@ in
           # secondary is a community mirror the upstream author does not vouch for.
           caches = {
             primary = {
-              url = "https://attic.xuyh0120.win/lantian";
-              key = "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc=";
+              url = "https://cache.lantian.pub/lantian";
+              key = "lantian:WVGO7vsRMSEN+h7Lp7kv6SAmrkEXgUGbbXm7jMDjBuQ=";
             };
 
             secondary = {
