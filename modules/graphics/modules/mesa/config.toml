@@ -2,3 +2,6 @@
 rc = false
 git = false
 shaderCacheMaxSize = "16G"
+
+[updater]
+min-interval = "24h"

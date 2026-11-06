@@ -1,5 +1,6 @@
 #!/usr/bin/env nix-shell
-#! nix-shell -i bash -p git curl jq nix gnutar
+#! nix-shell -i bash -p git curl jq nix gnutar python3
+# shellcheck shell=bash
 
 set -euo pipefail
 
@@ -176,6 +177,36 @@ update_git() {
   if [ "$git_rev" = "$current_rev" ]; then
     info "  Git already up to date ($git_rev)"
     return
+  fi
+
+  # Check minimum interval between git pin bumps.
+  local min_interval_str min_interval_sec last_updated now
+  min_interval_str=$(python3 -c "
+import tomllib
+try:
+    with open('$SCRIPT_DIR/config.toml', 'rb') as f:
+        data = tomllib.load(f)
+    print(data.get('updater', {}).get('min-interval', '24h'))
+except Exception:
+    print('24h')
+" 2>/dev/null || echo "24h")
+
+  min_interval_sec=$(python3 -c "
+s = '$min_interval_str'.strip().lower()
+if s.endswith('h'): print(int(float(s[:-1]) * 3600))
+elif s.endswith('d'): print(int(float(s[:-1]) * 86400))
+elif s.endswith('m'): print(int(float(s[:-1]) * 60))
+else: print(int(float(s)))
+" 2>/dev/null || echo 86400)
+
+  if [ -n "$current_rev" ] && [ -f "$GIT_JSON" ]; then
+    last_updated=$(git -C "$SCRIPT_DIR" log -1 --format=%ct -- "$GIT_JSON" 2>/dev/null || true)
+    [ -n "$last_updated" ] || last_updated=$(stat -c %Y "$GIT_JSON" 2>/dev/null || echo 0)
+    now=$(date +%s)
+    if [ "$last_updated" -gt 0 ] && [ $((now - last_updated)) -lt "$min_interval_sec" ]; then
+      info "  Git pin was updated $(( (now - last_updated) / 3600 ))h ago (< $min_interval_str min-interval); skipping git bump"
+      return
+    fi
   fi
 
   # Fail open: if the count cannot be determined (API error, current_rev gone,
