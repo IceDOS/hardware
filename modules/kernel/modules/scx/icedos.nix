@@ -32,11 +32,16 @@
               scx.extraArgs;
         in
         {
-          services.scx = {
-            package = pkgs.scx.full;
+          services.scx-loader = {
             enable = true;
-            scheduler = "scx_${scheduler}";
-            inherit extraArgs;
+            schedsPackages = [ pkgs.scx.full ];
+
+            config = {
+              default_sched = "scx_${scheduler}";
+              default_mode = "Auto";
+              # Empty keeps scx_loader's built-in flags for the mode.
+              scheds."scx_${scheduler}" = lib.optionalAttrs (extraArgs != [ ]) { auto_mode = extraArgs; };
+            };
           };
 
           icedos.system.tips.list = [
