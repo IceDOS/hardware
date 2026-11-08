@@ -1,6 +1,7 @@
 [icedos.hardware.graphics.nvidia]
 beta = false
 cuda = false
+legacy = false
 openDrivers = false
 
 [icedos.hardware.graphics.nvidia.power-limit]

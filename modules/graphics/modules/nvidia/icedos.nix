@@ -8,6 +8,7 @@
       inherit ((importTOML ./config.toml).icedos.hardware.graphics.nvidia)
         beta
         cuda
+        legacy
         openDrivers
         power-limit
         ;
@@ -15,6 +16,7 @@
     {
       beta = mkBoolOption { default = beta; };
       cuda = mkBoolOption { default = cuda; };
+      legacy = mkBoolOption { default = legacy; };
       openDrivers = mkBoolOption { default = openDrivers; };
 
       power-limit =
@@ -55,6 +57,8 @@
             package =
               if nvidia.beta then
                 config.boot.kernelPackages.nvidiaPackages.beta
+              else if nvidia.legacy then
+                config.boot.kernelPackages.nvidiaPackages.legacy_580
               else
                 config.boot.kernelPackages.nvidiaPackages.stable;
 
