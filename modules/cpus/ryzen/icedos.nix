@@ -9,8 +9,8 @@
       {
         boot = {
           kernelParams = [
+            # Only takes effect on CPUs with CPPC (Zen 2+).
             "amd-pstate=active"
-            "amd_pstate.shared_mem=1"
           ];
 
           kernelModules = [ "msr" ];
@@ -19,7 +19,7 @@
         hardware.cpu.amd.updateMicrocode = true;
 
         icedos.system.tips.list = [
-          "Your AMD CPU picks its own speed with amd-pstate, saving power when idle."
+          "On Zen 2 and newer, amd-pstate lets the CPU pick its own speed, saving power when idle."
         ];
       }
     ];
