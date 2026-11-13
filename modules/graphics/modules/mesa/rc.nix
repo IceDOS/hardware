@@ -14,45 +14,41 @@
         if superseded then
           final.lib.warn "mesa-rc: pinned RC ${source.version} is not newer than nixpkgs mesa ${super.mesa.version}; using nixpkgs mesa. Bump rc.json or set icedos.hardware.graphics.mesa.rc = false." super.mesa
         else
-          (import ./compat.nix {
-            inherit (final) lib;
-            name = "mesa-rc";
-          } super.mesa).overrideAttrs
-            (
-              old:
-              let
-                patchDir = ./patches;
-                entries = builtins.readDir patchDir;
-                patchFiles = builtins.filter (
-                  name:
-                  builtins.stringLength name > 6
-                  && builtins.substring (builtins.stringLength name - 6) 6 name == ".patch"
-                ) (builtins.attrNames entries);
-              in
-              {
-                version = source.version;
-                src = final.fetchFromGitLab {
-                  domain = "gitlab.freedesktop.org";
-                  owner = "mesa";
-                  repo = "mesa";
-                  inherit (source) rev hash;
-                };
+          super.mesa.overrideAttrs (
+            old:
+            let
+              patchDir = ./patches;
+              entries = builtins.readDir patchDir;
+              patchFiles = builtins.filter (
+                name:
+                builtins.stringLength name > 6
+                && builtins.substring (builtins.stringLength name - 6) 6 name == ".patch"
+              ) (builtins.attrNames entries);
+            in
+            {
+              version = source.version;
+              src = final.fetchFromGitLab {
+                domain = "gitlab.freedesktop.org";
+                owner = "mesa";
+                repo = "mesa";
+                inherit (source) rev hash;
+              };
 
-                patches = map (f: patchDir + "/${f}") patchFiles;
+              patches = map (f: patchDir + "/${f}") patchFiles;
 
-                env = (old.env or { }) // {
-                  MESON_PACKAGE_CACHE_DIR = import ./package-cache.nix {
-                    inherit (final) fetchCrate lib runCommand;
-                  } source.wraps;
-                };
+              env = (old.env or { }) // {
+                MESON_PACKAGE_CACHE_DIR = import ./package-cache.nix {
+                  inherit (final) fetchCrate lib runCommand;
+                } source.wraps;
+              };
 
-                postPatch = ''
-                  patchShebangs .
-                '';
+              postPatch = ''
+                patchShebangs .
+              '';
 
-                NIX_CFLAGS_COMPILE = (old.NIX_CFLAGS_COMPILE or "") + " -Wno-error=format";
-              }
-            );
+              NIX_CFLAGS_COMPILE = (old.NIX_CFLAGS_COMPILE or "") + " -Wno-error=format";
+            }
+          );
     })
   ];
 }

@@ -15,11 +15,11 @@
     {
       rc = mkBoolOption {
         default = rc;
-        description = "Build mesa from the release-candidate snapshot pinned in rc.json. Until nixpkgs wires venus-protocol into mesa, the virtio (venus) Vulkan driver is disabled in this build — relevant if you need Vulkan in a virtio-gpu VM guest.";
+        description = "Build mesa from the release-candidate snapshot pinned in rc.json.";
       };
       git = mkBoolOption {
         default = git;
-        description = "Build mesa from the git snapshot pinned in git.json. Until nixpkgs wires venus-protocol into mesa, the virtio (venus) Vulkan driver is disabled in this build — relevant if you need Vulkan in a virtio-gpu VM guest.";
+        description = "Build mesa from the git snapshot pinned in git.json.";
       };
 
       shaderCacheMaxSize = mkStrOption {
