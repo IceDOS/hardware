@@ -1,0 +1,19 @@
+PS4: turn off HiZ in RADV on Liverpool/Gladius (it hangs the GPU).
+Tested on a PS4 Pro (Gladius): vkcube hangs with HiZ, runs without it.
+Rebased onto Mesa 26.3.0: RADV_DEBUG(instance, NO_HIZ).
+
+diff --git a/src/amd/vulkan/radv_physical_device.c b/src/amd/vulkan/radv_physical_device.c
+--- a/src/amd/vulkan/radv_physical_device.c
++++ b/src/amd/vulkan/radv_physical_device.c
+@@ -2791,7 +2791,10 @@
+ 
+    pdev->force_64_byte_sampled_image = !pdev->use_fmask && pdev->drirc.debug.force_64_byte_sampled_image;
+ 
+-   pdev->use_hiz = !(RADV_DEBUG(instance, NO_HIZ));
++   /* PS4 Liverpool/Gladius: HiZ (HTILE) hangs the gfx ring on the first frame
++    * ("ring gfx timeout"); radeonsi's HiZ works. Same as RADV_DEBUG=nohiz. */
++   pdev->use_hiz = !(RADV_DEBUG(instance, NO_HIZ)) &&
++                   pdev->info.family != CHIP_LIVERPOOL && pdev->info.family != CHIP_GLADIUS;
+ 
+    if (pdev->info.gfx_level == GFX12) {
+       const char *gfx12_hiz_wa_str = pdev->drirc.performance.gfx12_hiz_wa;
