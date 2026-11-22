@@ -87,10 +87,16 @@ in
           enabledCaches = attrValues (filterAttrs (name: _: cachyos.substituters.${name}) caches);
           urls = catAttrs "url" enabledCaches;
 
-          registered = if (icedos-state != null) then importJSON "${icedos-state}/substituters" else [ ];
+          registered =
+            if (icedos-state != null && builtins.pathExists "${icedos-state}/substituters") then
+              importJSON "${icedos-state}/substituters"
+            else
+              [ ];
 
           missingUrls = filter (url: !elem url registered) urls;
-          shouldApplyCachyosKernel = any (url: elem url registered) urls || cachyos.applyWithoutSubstituter;
+          cachyosRegistered = any (url: elem url registered) urls;
+          cachePending = config.icedos.system.cache.pending;
+          shouldApplyCachyosKernel = cachyos.applyWithoutSubstituter || (cachyosRegistered && !cachePending);
         in
         {
           warnings =
@@ -105,7 +111,7 @@ in
               /etc/icedos/substituters once it is activated. Run 'icedos rebuild' again
               after activation to fetch the kernel from them.
             ''
-            ++ optional (urls != [ ] && !shouldApplyCachyosKernel) ''
+            ++ optional (urls != [ ] && !cachyosRegistered && !cachyos.applyWithoutSubstituter) ''
               cachyos-kernel: the cachyos kernel is NOT applied in this generation.
               This build only registers the cachyos substituters (nix.settings.substituters);
               it is picked up from /etc/icedos/substituters only after the new generation
@@ -133,7 +139,7 @@ in
           nix.settings.trusted-public-keys = catAttrs "key" enabledCaches;
 
           icedos.system.tips.list =
-            optional (!shouldApplyCachyosKernel)
+            optional (urls != [ ] && !cachyosRegistered && !cachyos.applyWithoutSubstituter)
               "The CachyOS kernel needs two rebuilds: the first sets up its download server, the second installs it.";
         }
       )

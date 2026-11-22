@@ -47,7 +47,7 @@
               ++ optional (lockupTimeout != "") "amdgpu.lockup_timeout=${lockupTimeout}";
           };
 
-          nixpkgs.config.rocmSupport = rocm;
+          nixpkgs.config.rocmSupport = rocm && !config.icedos.system.cache.pending;
 
           icedos.system.tips.list = optionals (!rocm) [
             "[icedos.hardware.graphics.radeon] rocm = true adds AMD support for AI and compute apps."

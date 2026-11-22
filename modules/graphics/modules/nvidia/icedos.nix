@@ -88,7 +88,7 @@
             }
           ];
 
-          nixpkgs.config.cudaSupport = nvidia.cuda;
+          nixpkgs.config.cudaSupport = nvidia.cuda && !config.icedos.system.cache.pending;
 
           systemd.services.nv-power-limit = mkIf power-limit.enable {
             enable = true;
