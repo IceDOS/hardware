@@ -1,7 +1,7 @@
 {
-  "version": "27.0.0-devel-ade68f7",
-  "rev": "ade68f7f4f2a0aeccb0f7a629607f098562052a3",
-  "hash": "sha256-Eo9AGr866tYGw6GdKN/zHCMD5fmcyRLuiVuSp6y/vRw=",
+  "version": "27.0.0-devel-4f29b71",
+  "rev": "4f29b71712ecfd92d73f280a710e8b0496e505c7",
+  "hash": "sha256-YibzifKcG11APn4WUpLRqxkqaDoAYhnDPi9SMcGpLV8=",
   "wraps": [
     {
       "pname": "bitflags",
