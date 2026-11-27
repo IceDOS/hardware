@@ -1,7 +1,7 @@
 {
-  "version": "27.0.0-devel-5e42a70",
-  "rev": "5e42a706011e7eae871222b3c68a3c52428069eb",
-  "hash": "sha256-mSswEIZgaSFMZ4wrVJ2fAN2DveXbrVCZqeQCpGFD9A0=",
+  "version": "27.0.0-devel-15262f1",
+  "rev": "15262f16f33b4a1b9d86aa0e78fa55d1dc337fe9",
+  "hash": "sha256-3p6k8jJGGSWHmEwWDh7iYwQpf+/sqSLaBHBZFX4gccI=",
   "wraps": [
     {
       "pname": "bitflags",
@@ -14,6 +14,11 @@
       "hash": "sha256-uvHeQzl2FYi8Bhnjy8ASDuWC67dLU7Tvv3kRe9LaQP0="
     },
     {
+      "pname": "elf",
+      "version": "0.8.0",
+      "hash": "sha256-Vd2IiiE/xX6Ver8qowXuPooo2+BWh6JR8ztjfNRrAHA="
+    },
+    {
       "pname": "equivalent",
       "version": "1.0.1",
       "hash": "sha256-VEOAfW3/aTc9Qzq571N4rY31DKYpjK8V3m5S4kqvVNU="
@@ -22,6 +27,11 @@
       "pname": "errno",
       "version": "0.3.12",
       "hash": "sha256-zqFO+TVeO+qwY3A6qdqxWv0l8GZ8NBMQweUnS7HQ2hg="
+    },
+    {
+      "pname": "flatbuffers",
+      "version": "25.2.10",
+      "hash": "sha256-EEU5jBv9iRaLX9Px/BH25ws09vZjAMh9RNPehJRjq/E="
     },
     {
       "pname": "hashbrown",
@@ -37,6 +47,11 @@
       "pname": "libc",
       "version": "0.2.185",
       "hash": "sha256-Uv8sD+m8bLaxSgWSwv9Pqc64PuqduXmwSHzQVJRqK48="
+    },
+    {
+      "pname": "llvm-sys",
+      "version": "201.0.1",
+      "hash": "sha256-m7lH6LeSVMoQ1JbQeYqboSh9z2jlCpKwFv7BzEW+9Ec="
     },
     {
       "pname": "log",
